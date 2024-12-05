@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 
 public class Monster : MonoBehaviour
 {
@@ -12,14 +13,14 @@ public class Monster : MonoBehaviour
 
     protected Animator myAnimator;
 
-    [SerializeField]
-    private Stat health;
-
     public Point GridPosition { get; set; }
 
     public bool IsActive { get; set; }
 
     private Vector3 destination;
+
+    [SerializeField]
+    private Stat health;
 
     private void Awake()
     {
@@ -33,33 +34,23 @@ public class Monster : MonoBehaviour
         Move();
     }
 
-    /// <summary>
-    /// Spawns the monster in our world
-    /// </summary>
     public void Spawn(int health)
     {
         transform.position = LevelManager.Instance.BluePortal.transform.position;
-        //this.health.Bar.Reset();
-        this.health.MaxVal = health;
-        this.health.CurrentValue = this.health.MaxVal;
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
         {
             spriteRenderer.sortingOrder = 1; // Set the order in layer to 1
         }
-        //Starts to scale the monsters
-        StartCoroutine(Scale(new Vector3(0.1f, 0.1f), new Vector3(1, 1),false));
+        this.health.MaxVal = health;
+        this.health.CurrentValue = this.health.MaxVal;
 
-        //Sets the monsters path
+        StartCoroutine(Scale(new Vector3(0.1f, 0.1f), new Vector3(1, 1), false));
+
         SetPath(LevelManager.Instance.Path);
     }
 
-    /// <summary>
-    /// Scales a monster up or down
-    /// </summary>
-    /// <param name="from">start scale</param>
-    /// <param name="to">end scale</param>
-    /// <returns></returns>
+
     public IEnumerator Scale(Vector3 from, Vector3 to, bool remove)
     {
         //The scaling progress
@@ -188,21 +179,19 @@ public class Monster : MonoBehaviour
         if (other.tag == "RedPortal")//If we collide with the red portal
         {
             //Start scaling the monster down
-            StartCoroutine(Scale(new Vector3(1, 1), new Vector3(0.1f, 0.1f),true));
+            StartCoroutine(Scale(new Vector3(1, 1), new Vector3(0.1f, 0.1f), true));
 
             //Plays the portal animation
             other.GetComponent<Portal>().Open();
 
             GameManager.Instance.Lives--;
-
-           
         }
     }
 
     /// <summary>
     /// Releases a monster from the game into the object pool
     /// </summary>
-    public void Release()
+    private void Release()
     {
         //Makes sure that it isn't active
         IsActive = false;
@@ -219,25 +208,9 @@ public class Monster : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
-        if (IsActive)
+        if(IsActive)
         {
-            health.CurrentValue -= damage;
-
-            if (health.CurrentValue <= 0)
-            {
-                GameManager.Instance.Currency += 2;
-
-                myAnimator.SetTrigger("Die");
-
-                IsActive = false;
-
-                GetComponent<SpriteRenderer>().sortingOrder--;
-
-
-            }
+            health.CurrentValue -= damage;   
         }
-       
     }
-
-
 }

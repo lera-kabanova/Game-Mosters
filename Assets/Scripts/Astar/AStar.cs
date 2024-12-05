@@ -5,24 +5,34 @@ using UnityEngine;
 
 public static class AStar
 {
-
+    /// <summary>
+    /// A dictionary for all nodes in the game
+    /// </summary>
     private static Dictionary<Point, Node> nodes;
 
-
+    /// <summary>
+    /// Creates a node for each tile in the game
+    /// </summary>
     private static void CreateNodes()
     {
-       
+        //Instantiates the dicationary
         nodes = new Dictionary<Point, Node>();
 
+        //Run throughm all the tiles in the game
         foreach (TileScript tile in LevelManager.Instance.Tiles.Values)
         {
+            //Adds the node to the node dictionary
             nodes.Add(tile.GridPosition, new Node(tile));
         }
     }
 
+    /// <summary>
+    /// Generates a path with the A* algothithm
+    /// </summary>
+    /// <param name="start">The start of the path</param>
     public static Stack<Node> GetPath(Point start, Point goal)
     {
-        if (nodes == null) 
+        if (nodes == null) //If we don't have nodes then we need to create them
         {
             CreateNodes();
         }
@@ -71,30 +81,33 @@ public static class AStar
                             gCost = 14;
                         }
 
+                        //3. Adds the neighbor to the open list
                         Node neighbour = nodes[neighbourPos];
 
                         if (openList.Contains(neighbour))
                         {
-                            if (currentNode.G + gCost < neighbour.G)
+                            if (currentNode.G + gCost < neighbour.G)//Step 9.4
                             {
                                 neighbour.CalcValues(currentNode, nodes[goal], gCost);
                             }
                         }
-                        else if (!closedList.Contains(neighbour))
+                        else if (!closedList.Contains(neighbour))//9.1
                         {
-                            openList.Add(neighbour); 
-                            neighbour.CalcValues(currentNode, nodes[goal], gCost);
+                            openList.Add(neighbour); //9.2
+                            neighbour.CalcValues(currentNode, nodes[goal], gCost);//9.3
                         }
 
                     }
                 }
             }
 
+            //5. & 8. Moves the current node from the open list to the closed list
             openList.Remove(currentNode);
             closedList.Add(currentNode);
 
-            if (openList.Count > 0) { 
-                
+            if (openList.Count > 0)//STEP 7.
+            {
+                //Sorts the list by F value, and selects the first on the list
                 currentNode = openList.OrderBy(n => n.F).First();
             }
 
@@ -116,6 +129,12 @@ public static class AStar
        // GameObject.Find("AStarDebugger").GetComponent<AStarDebugger>().DebugPath(openList, closedList,finalPath);
     }
 
+    /// <summary>
+    /// Checks if two nodes are connected digonally
+    /// </summary>
+    /// <param name="currentNode">The current node</param>
+    /// <param name="neighbor">The neighbor node</param>
+    /// <returns></returns>
     private static bool ConnectedDiagonally(Node currentNode, Node neighbor)
     {
         //Gets the direction to check

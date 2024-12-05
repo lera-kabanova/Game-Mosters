@@ -12,7 +12,6 @@ GameObject:
   - component: {fileID: 212833410294690268}
   - component: {fileID: 114608007320651604}
   - component: {fileID: 61295162997913538}
-  - component: {fileID: 95139068892345506}
   m_Layer: 0
   m_Name: StormProjectile
   m_TagString: Untagged
@@ -76,12 +75,12 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 3
-  m_Sprite: {fileID: 21300000, guid: 02f45e60fcbf3e34f8401d41a9bb4c31, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 213231513c569024db1046a39de34293, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
-  m_Size: {x: 0.9066667, y: 0.31}
+  m_Size: {x: 1, y: 1}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
@@ -117,7 +116,7 @@ BoxCollider2D:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
     oldSize: {x: 0.9066667, y: 0.31}
-    newSize: {x: 0.9066667, y: 0.31}
+    newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
@@ -125,24 +124,3 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 0.9066667, y: 0.31}
   m_EdgeRadius: 0
---- !u!95 &95139068892345506
-Animator:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1176597337697150}
-  m_Enabled: 1
-  m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: a425ff3d7c3e4444a91e3723e337954f, type: 2}
-  m_CullingMode: 0
-  m_UpdateMode: 0
-  m_ApplyRootMotion: 0
-  m_LinearVelocityBlending: 0
-  m_StabilizeFeet: 0
-  m_WarningMessage: 
-  m_HasTransformHierarchy: 1
-  m_AllowConstantClipSamplingOptimization: 1
-  m_KeepAnimatorStateOnDisable: 0
-  m_WriteDefaultValuesOnDisable: 0

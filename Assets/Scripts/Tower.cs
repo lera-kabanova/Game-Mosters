@@ -4,117 +4,147 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour {
 
-	[SerializeField]
-	private string projectileType;
+    /// <summary>
+    /// This is the projectiles type
+    /// </summary>
+    [SerializeField]
+    private string projectileType;
 
-	[SerializeField]
-	private float projectileSpeed;
+    [SerializeField]
+    private float projectileSpeed;
 
-	private Animator myAnimator;
+    private Animator myAnimator;
 
-	[SerializeField]
-	private int damage;
+    [SerializeField]
+    private int damage;
 
-	public int Damage
-	{
-		get
-		{
-			return damage;
-		}
+    public float ProjectileSpeed
+    {
+        get { return projectileSpeed; }
+    }
 
-	}
-	public float ProjectileSpeed
-	{
-		get
-		{
-			return projectileSpeed;
-		}
-	}
+    /// <summary>
+    /// The tower's sprite renderer
+    /// </summary>
     private SpriteRenderer mySpriteRenderer;
 
-	private Monster target;
+    /// <summary>
+    /// The tower's current target
+    /// </summary>
+    private Monster target;
 
-	public Monster Target
-	{
-		get
-		{
-			return target;
-		}
-	}
-	private Queue<Monster> monsters = new Queue<Monster>();
-
-	private bool canAttack = true;
-
-	private float attackTimer;
-
-	[SerializeField]
-	private float attackCooldown;
-	// Use this for initialization
-	void Awake ()
+    public Monster Target
     {
-		myAnimator = transform.parent.GetComponent<Animator>();
+        get { return target; }
+    }
+
+    public int Damage
+    {
+        get
+        {
+            return damage;
+        }
+    }
+
+    /// <summary>
+    /// A queue of monsters that the tower can attack
+    /// </summary>
+    private Queue<Monster> monsters = new Queue<Monster>();
+
+    private bool canAttack = true;
+
+    private float attackTimer;
+
+    [SerializeField]
+    private float attackCooldown;
+
+	// Use this for initialization
+	void Awake()
+    {
+        myAnimator = transform.parent.GetComponent<Animator>();
         mySpriteRenderer = GetComponent<SpriteRenderer>();
 	}
 	
 	// Update is called once per frame
-	void Update () {
-		Attack();
+	void Update ()
+    {
+
+        Attack();
 	}
 
+    /// <summary>
+    /// Selects the tower
+    /// </summary>
     public void Select()
     {
         mySpriteRenderer.enabled = !mySpriteRenderer.enabled;
     }
 
-	private void Attack()
-	{
-
-		if(!canAttack)
-		{
+    /// <summary>
+    /// Makes the tower attack a target
+    /// </summary>
+    private void Attack()
+    {
+        if (!canAttack)//If we can't attack
+        {
+            //Count how much time has passed since last attack
             attackTimer += Time.deltaTime;
-			
-			if(attackTimer >= attackCooldown)
-			{
-				canAttack = true;
-				attackTimer  = 0;
-			}
-		}
-		if(target == null && monsters.Count > 0)
-		{
-			target = monsters.Dequeue();
 
-		}
-		if(target != null && target.IsActive)
-		{
-			if(canAttack)
-			{
-                Shoot();
-				myAnimator.SetTrigger("Attack");
-				canAttack= false;
+            //If the time passed is higher than the cooldown, then we need to reset
+            //and be able to attack again
+            if (attackTimer >= attackCooldown)
+            {
+                canAttack = true;
+                attackTimer = 0;
             }
-		}
-	}
+        }
+        //If we don't have a target and we have more targets in range
+        if (target == null && monsters.Count > 0)
+        {
+            target = monsters.Dequeue();
+            
+        }
+        if (target != null && target.IsActive)//If we have a target that is active
+        {
+            if (canAttack)//If we can attack then we shoot at the target
+            {
+                Shoot();
 
-	private void Shoot()
-	{
-		Projectile projectile = GameManager.Instance.Pool.GetObject(projectileType).GetComponent<Projectile>();
+                myAnimator.SetTrigger("Attack");
+
+                canAttack = false;
+            }
+         
+        }
+    }
+
+    /// <summary>
+    /// Makes the tower shoot
+    /// </summary>
+    private void Shoot()
+    {
+        //Gets a projectile from the object pool
+        Projectile projectile = GameManager.Instance.Pool.GetObject(projectileType).GetComponent<Projectile>();
+
+        //Makes sure that the projectile is instantiated on the towers position
         projectile.transform.position = transform.position;
-		projectile.Initialize(this); 
-	}
-	public void OnTriggerEnter2D(Collider2D other)
-	{
-		if(other.tag == "Monster")
-		{
-			monsters.Enqueue(other.GetComponent<Monster>());
-		}
-	}
+
+        projectile.Initialize(this);
+    }
+
+    public void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "Monster") //Adds new monsters to the queu when they enter the range
+        {
+            monsters.Enqueue(other.GetComponent<Monster>());
+        }
+    }
 
     public void OnTriggerExit2D(Collider2D other)
     {
-        if(other.tag == "Monster")
-		{
-			target = null;
-
-		}
+        if (other.tag == "Monster")
+        {
+            target = null;
+        }
     }
 }

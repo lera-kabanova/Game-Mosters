@@ -3,10 +3,20 @@ using System.Collections;
 
 public class CameraMovement : MonoBehaviour
 {
+    /// <summary>
+    /// The camera's movement speed
+    /// </summary>
     [SerializeField]
     private float cameraSpeed = 0;
 
+    /// <summary>
+    /// The max x value of the camera
+    /// </summary>
     private float xMax;
+
+    /// <summary>
+    /// The min y balue of the camera
+    /// </summary>
     private float yMin;
 
     // Update is called once per frame

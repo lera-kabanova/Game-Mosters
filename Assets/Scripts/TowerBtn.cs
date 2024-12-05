@@ -2,12 +2,21 @@
 using System.Collections;
 using UnityEngine.UI;
 using TMPro;
-
+/// <summary>
+/// This script is attached to all the buttons in the right side on the screen
+/// These are the buttons, that we use when we buy towers
+/// </summary>
 public class TowerBtn : MonoBehaviour {
 
+    /// <summary>
+    /// The prefab that this button will spawn
+    /// </summary>
     [SerializeField]
     private GameObject towerPrefab;
 
+    /// <summary>
+    /// A reference to the tower's sprite
+    /// </summary>
     [SerializeField]
     private Sprite sprite;
 
@@ -17,6 +26,9 @@ public class TowerBtn : MonoBehaviour {
     [SerializeField]
     private TMP_Text priceTxt;
 
+    /// <summary>
+    /// Property for accessing the button's prefab
+    /// </summary>
     public GameObject TowerPrefab
     {
         get
@@ -25,6 +37,9 @@ public class TowerBtn : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// A reference for accessing the tower sprite
+    /// </summary>
     public Sprite Sprite
     {
         get

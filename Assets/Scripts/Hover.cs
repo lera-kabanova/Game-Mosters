@@ -12,21 +12,21 @@ public class Hover : Singleton<Hover>
     /// </summary>
     private SpriteRenderer rangeSpriteRenderer;
 
-    // Use this for initialization
-    void Start()
+	// Use this for initialization
+	void Start ()
     {
         //Creates the references to the sprite renderer
         this.spriteRenderer = GetComponent<SpriteRenderer>();
 
         this.rangeSpriteRenderer = transform.GetChild(0).GetComponent<SpriteRenderer>();
-    }
-
-    // Update is called once per frame
-    void Update()
+	}
+	
+	// Update is called once per frame
+	void Update ()
     {
         //Makes sure that we follow the mouse
         FollowMouse();
-    }
+	}
 
     /// <summary>
     /// Makes the hover icon follow the mouse
@@ -72,6 +72,6 @@ public class Hover : Singleton<Hover>
         //Unclicks our button
         GameManager.Instance.ClickedBtn = null;
 
-
+  
     }
 }

@@ -17,22 +17,30 @@ public class AStarDebugger : MonoBehaviour
     private GameObject debugTilePrefab;
 
 
+	// Use this for initialization
 	void Start () {
 	
 	}
 	
-	//void Update ()
- //   {
- //       ClickTile();
- //       if (Input.GetKeyDown(KeyCode.Space))
- //       {
- //           AStar.GetPath(start.GridPosition, goal.GridPosition);
- //       }
-	//}
+	// Update is called once per frame
+	void Update ()
+    {
 
+        //ClickTile();
+
+        ////Generates a path when we click sapce
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    AStar.GetPath(start.GridPosition, goal.GridPosition);
+        //}
+	}
+
+    /// <summary>
+    /// Click a tile in the game
+    /// </summary>
     private void ClickTile()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(1)) //Craete a raycast if we click a tile
         {
             RaycastHit2D hit = Physics2D.Raycast(Camera.main.ScreenToWorldPoint(Input.mousePosition), Vector2.zero);
 
@@ -59,27 +67,32 @@ public class AStarDebugger : MonoBehaviour
         }
     }
 
-   
+    /// <summary>
+    /// Debugs the path, so that we can see what's going on
+    /// </summary>
+    /// <param name="openList"></param>
     public void DebugPath(HashSet<Node> openList, HashSet<Node> closedList, Stack<Node> path)
     {
-        foreach (Node node in  openList)
+        foreach (Node node in  openList)//Colors all the tiles blue so that we can see which tiles are in the open list
         {
             if (node.TileRef != start && node.TileRef != goal)
             {
                 CreateDebugTile(node.TileRef.WorldPosition, Color.cyan, node);
             }
 
+            //Points at the parent
             PointToParent(node, node.TileRef.WorldPosition);
            
         }
 
-        foreach (Node node in closedList)
+        foreach (Node node in closedList)//Colors all the tiles blue so that we can see which tiles are in the closed list
         {
             if (node.TileRef != start && node.TileRef != goal && !path.Contains(node))
             {
                 CreateDebugTile(node.TileRef.WorldPosition, Color.blue,node);
             }
 
+            //Points at the parent
             PointToParent(node, node.TileRef.WorldPosition);
         }
 
@@ -92,7 +105,11 @@ public class AStarDebugger : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    /// Creates an arrow, that points at the parent
+    /// </summary>
+    /// <param name="node">Parent</param>
+    /// <param name="position">world pos</param>
     private void PointToParent(Node node, Vector2 position)
     {
         if (node.Parent != null) //Checks if the node has a parent

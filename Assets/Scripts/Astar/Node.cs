@@ -13,11 +13,15 @@ public class Node
     public Point GridPosition { get; private set; }
 
     /// <summary>
+    /// The nodes position in the world, this is more a reference to the tile that the node is connected to
+    /// </summary>
+    public Vector2 WorldPosition { get; set; }
+
+    /// <summary>
     /// A reference to the tile that this node belongs to
     /// </summary>
     public TileScript TileRef { get;  private set; }
 
-    public Vector2 WorldPosition { get; set; }
     /// <summary>
     /// A reference to the nodes parent
     /// </summary>

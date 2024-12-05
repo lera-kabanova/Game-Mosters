@@ -3,15 +3,24 @@ using System.Collections;
 
 public class Portal : MonoBehaviour {
 
-	private Animator myAnimator;
+    /// <summary>
+    /// Reference to the animator
+    /// </summary>
+    private Animator myAnimator;
+
 	// Use this for initialization
 	void Start () {
-		myAnimator = GetComponent<Animator>();
-	
+
+        //Creates the reference to the animator component
+        myAnimator = GetComponent<Animator>();
 	}
-	
-	public void Open()
-	{
-		myAnimator.SetTrigger("Open");
-	}
+
+    /// <summary>
+    /// Opens the portal
+    /// </summary>
+    public void Open()
+    {
+        //Triggers the open animation
+        myAnimator.SetTrigger("Open");
+    }
 }
