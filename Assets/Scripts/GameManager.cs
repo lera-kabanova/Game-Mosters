@@ -111,9 +111,7 @@ public class GameManager : Singleton<GameManager>
         HandleEscape();
 	}
 
-    /// <summary>
-    /// Pick a tower then a buy button is pressed
-    /// </summary>
+ 
     /// <param name="towerBtn">The clicked button</param>
     public void PickTower(TowerBtn towerBtn)
     {
@@ -129,9 +127,7 @@ public class GameManager : Singleton<GameManager>
  
     }
 
-    /// <summary>
-    /// Buys a tower
-    /// </summary>
+
     public void BuyTower()
     {
         if (Currency >= ClickedBtn.Price)
@@ -143,9 +139,8 @@ public class GameManager : Singleton<GameManager>
         
     }
 
-    /// <summary>
     /// Selects a tower by clicking it
-    /// </summary>
+   
     /// <param name="tower">The clicked tower</param>
     public void SelectTower(Tower tower)
     {
@@ -162,9 +157,9 @@ public class GameManager : Singleton<GameManager>
         selectedTower.Select();
     }
 
-    /// <summary>
+   
     /// Deselect the tower
-    /// </summary>
+   
     public void DeselectTower()
     {
         //If we have a selected tower
@@ -178,9 +173,9 @@ public class GameManager : Singleton<GameManager>
         selectedTower = null;
     }
 
-    /// <summary>
+    
     /// Handles escape presses
-    /// </summary>
+    
     private void HandleEscape()
     {
         if (Input.GetKeyDown(KeyCode.Escape))//if we press escape
@@ -201,10 +196,9 @@ public class GameManager : Singleton<GameManager>
         waveBtn.SetActive(false);
     }
 
-    /// <summary>
+    
     /// Spawns a wave of monsters
-    /// </summary>
-    /// <returns></returns>
+    
     private IEnumerator SpawnWave()
     {
         //Generates the path
@@ -250,10 +244,10 @@ public class GameManager : Singleton<GameManager>
 
     }
 
-    /// <summary>
+    
     /// Removes a monster from the game
-    /// </summary>
-    /// <param name="monster">Monster to remove</param>
+  
+ 
     public void RemoveMonster(Monster monster)
     {
         //Removes the monster from the active list
