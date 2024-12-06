@@ -6,14 +6,8 @@ using UnityEngine.SceneManagement;
 using TMPro;
 public class GameManager : Singleton<GameManager>
 {
-    /// <summary>
-    /// a property for the towerBtn
-    /// </summary>
     public TowerBtn ClickedBtn { get; set; }
 
-    /// <summary>
-    /// A reference to the currency text
-    /// </summary>
     private int currency;
 
     private int wave = 0;
@@ -39,16 +33,15 @@ public class GameManager : Singleton<GameManager>
     [SerializeField]
     private GameObject gameOverMenu;
 
-    /// <summary>
-    /// The current selected tower
-    /// </summary>
     private Tower selectedTower;
 
     private List<Monster> activeMonsters = new List<Monster>();
 
-    /// <summary>
-    /// A property for the object pool
-    /// </summary>
+    [SerializeField]
+    private GameObject upgradePanel;
+
+    [SerializeField]
+    private TMP_Text sellText;
     public ObjectPool Pool { get; set; }
 
     public bool WaveActive
@@ -58,9 +51,6 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    /// <summary>
-    /// Property for accessing the currency
-    /// </summary>
     public int Currency
     {
         get
@@ -115,10 +105,7 @@ public class GameManager : Singleton<GameManager>
         HandleEscape();
 	}
 
-    /// <summary>
-    /// Pick a tower then a buy button is pressed
-    /// </summary>
-    /// <param name="towerBtn">The clicked button</param>
+
     public void PickTower(TowerBtn towerBtn)
     {
         if (Currency >= towerBtn.Price && !WaveActive)
@@ -147,10 +134,6 @@ public class GameManager : Singleton<GameManager>
         
     }
 
-    /// <summary>
-    /// Selects a tower by clicking it
-    /// </summary>
-    /// <param name="tower">The clicked tower</param>
     public void SelectTower(Tower tower)
     {
         if (selectedTower != null)//If we have selected a tower
@@ -164,6 +147,9 @@ public class GameManager : Singleton<GameManager>
 
         //Selects the tower
         selectedTower.Select();
+
+        sellText.text = "+" + (selectedTower.Price / 2).ToString();
+        upgradePanel.SetActive(true);
     }
 
     /// <summary>
@@ -179,7 +165,9 @@ public class GameManager : Singleton<GameManager>
         }
 
         //Remove the reference to the tower
+        upgradePanel.SetActive(false);
         selectedTower = null;
+        
     }
 
     /// <summary>
@@ -290,5 +278,16 @@ public class GameManager : Singleton<GameManager>
     public void QuitGame()
     {
         Application.Quit();
+    }
+
+    public void SellTower()
+    {
+        if(selectedTower != null)
+        {
+            Currency += selectedTower.Price / 2;
+            selectedTower.GetComponentInParent<TileScript>().IsEmpty = true;
+            Destroy(selectedTower.transform.parent.gameObject);
+            DeselectTower();
+        }
     }
 }

@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class Tower : MonoBehaviour {
 
-    /// <summary>
-    /// This is the projectiles type
-    /// </summary>
     [SerializeField]
     private string projectileType;
 
@@ -18,19 +15,15 @@ public class Tower : MonoBehaviour {
     [SerializeField]
     private int damage;
 
+    public int Price { get; set; }
     public float ProjectileSpeed
     {
         get { return projectileSpeed; }
     }
 
-    /// <summary>
-    /// The tower's sprite renderer
-    /// </summary>
+
     private SpriteRenderer mySpriteRenderer;
 
-    /// <summary>
-    /// The tower's current target
-    /// </summary>
     private Monster target;
 
     public Monster Target
