@@ -102,6 +102,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 1
+  elementType: 2
+  upgradePanel: {fileID: 0}
   health:
     bar: {fileID: 3722925637581532600}
     maxVal: 0

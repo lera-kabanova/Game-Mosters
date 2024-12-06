@@ -242,10 +242,6 @@ public class GameManager : Singleton<GameManager>
 
     }
 
-    /// <summary>
-    /// Removes a monster from the game
-    /// </summary>
-    /// <param name="monster">Monster to remove</param>
     public void RemoveMonster(Monster monster)
     {
         //Removes the monster from the active list
