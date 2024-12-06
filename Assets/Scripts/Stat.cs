@@ -12,6 +12,13 @@ public class Stat
     [SerializeField]
     private float maxVal;
 
+    public BarScript Bar
+    {
+        get 
+        {
+            return bar; 
+        }
+    }
     public float MaxVal
     {
         get

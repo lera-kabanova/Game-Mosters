@@ -37,6 +37,7 @@ public class Monster : MonoBehaviour
     public void Spawn(int health)
     {
         transform.position = LevelManager.Instance.BluePortal.transform.position;
+        this.health.Bar.Reset();
         SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
         {
@@ -130,11 +131,6 @@ public class Monster : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Animates the Unit according to the current action
-    /// </summary>
-    /// <param name="currentPos"></param>
-    /// <param name="newPos"></param>
     public void Animate(Point currentPos, Point newPos)
     {
         //The code below animates the unit based on the moving direction
@@ -170,10 +166,7 @@ public class Monster : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// When the monster collides with something
-    /// </summary>
-    /// <param name="other"></param>
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "RedPortal")//If we collide with the red portal
@@ -191,7 +184,7 @@ public class Monster : MonoBehaviour
     /// <summary>
     /// Releases a monster from the game into the object pool
     /// </summary>
-    private void Release()
+    public void Release()
     {
         //Makes sure that it isn't active
         IsActive = false;
@@ -211,6 +204,14 @@ public class Monster : MonoBehaviour
         if(IsActive)
         {
             health.CurrentValue -= damage;   
+
+            if(health.CurrentValue <= 0 )
+            {
+                GameManager.Instance.Currency += 2;
+                myAnimator.SetTrigger("Die");
+                IsActive = false;
+                GetComponent<SpriteRenderer>().sortingOrder--;
+            }
         }
     }
 }
