@@ -11,6 +11,8 @@ public class Monster : MonoBehaviour
 
     private Stack<Node> path;
 
+    private SpriteRenderer spriteRenderer;
+
     protected Animator myAnimator;
 
     public Point GridPosition { get; set; }
@@ -22,10 +24,19 @@ public class Monster : MonoBehaviour
     [SerializeField]
     private Stat health;
 
+    public bool Alive
+    {
+        get
+        {
+            return health.CurrentValue > 0;
+        }
+    }
+
     private void Awake()
     {
         //Sets up references to the components
         myAnimator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         health.Initialize();
     }
 
@@ -38,11 +49,7 @@ public class Monster : MonoBehaviour
     {
         transform.position = LevelManager.Instance.BluePortal.transform.position;
         this.health.Bar.Reset();
-        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.sortingOrder = 1; // Set the order in layer to 1
-        }
+        
         this.health.MaxVal = health;
         this.health.CurrentValue = this.health.MaxVal;
 
@@ -178,6 +185,11 @@ public class Monster : MonoBehaviour
             other.GetComponent<Portal>().Open();
 
             GameManager.Instance.Lives--;
+        }
+
+        if(other.tag == "Tile")
+        {
+           spriteRenderer.sortingOrder = other.GetComponent<TileScript>().GridPosition.Y;
         }
     }
 

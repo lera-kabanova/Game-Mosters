@@ -216,7 +216,7 @@ public class GameManager : Singleton<GameManager>
 
         for (int i = 0; i < wave; i++)
         {
-            int monterIndex = 0;//Random.Range(0, 4);
+            int monterIndex = Random.Range(0, 4);
 
             string type = string.Empty;
 
