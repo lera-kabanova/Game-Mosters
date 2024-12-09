@@ -8,4 +8,9 @@ public class PoisonTower : Tower
     {
         ElementType = Element.POISON;
     }
+
+    public override Debuff GetDebuff()
+    {
+        return new PoisonDebuff(Target);
+    }
 }

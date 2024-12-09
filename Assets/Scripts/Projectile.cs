@@ -35,18 +35,15 @@ public class Projectile : MonoBehaviour
 
     private void MoveToTarget()
     {
-        if (target != null && target.IsActive) //If the target isn't null and the target isn't dead
+        if (target != null && target.IsActive) 
         {
-            //Move towards the position
+            
             transform.position = Vector3.MoveTowards(transform.position, target.transform.position, Time.deltaTime * parent.ProjectileSpeed);
 
-            //Calculates the direction of the projectile
             Vector2 dir = target.transform.position - transform.position;
 
-            //Calculates the angle of the projectile
             float angle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
 
-            //Sets the rotation based on the angle
             transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
         }
         else if (!target.IsActive)
@@ -54,6 +51,21 @@ public class Projectile : MonoBehaviour
             GameManager.Instance.Pool.ReleaseObject(gameObject);
         }
     }
+
+    private void ApplyDebuff()
+    {
+        if(target.ElementType != elementType)
+        {
+            float roll = Random.Range(0, 100);
+
+            if(roll <= parent.Proc)
+            {
+                target.AddDebuff(parent.GetDebuff());
+            }
+        }
+        
+    }
+
 
     private void OnTriggerEnter2D(Collider2D other)
     {
@@ -63,7 +75,6 @@ public class Projectile : MonoBehaviour
             {
                 target.TakeDamage(parent.Damage, elementType);
                 myAnimator.SetTrigger("Impact");
-                //GameManager.Instance.Pool.ReleaseObject(gameObject);
             }
             
         }

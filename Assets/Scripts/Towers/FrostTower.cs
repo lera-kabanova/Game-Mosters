@@ -4,9 +4,15 @@ using UnityEngine;
 
 public class FrostTower : Tower
 {
+
     private void Start()
     {
         ElementType = Element.FROST;
+    }
+
+    public override Debuff GetDebuff()
+    {
+        return new FrostDebuff(Target);
     }
 
 }

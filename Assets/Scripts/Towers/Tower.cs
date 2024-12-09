@@ -16,6 +16,12 @@ public abstract class Tower : MonoBehaviour {
     [SerializeField]
     private int damage;
 
+    [SerializeField]
+    private float debuffDuration;
+
+    [SerializeField]
+    private float proc;
+
     public Element ElementType { get; protected set; }
     public int Price { get; set; }
     public float ProjectileSpeed
@@ -41,9 +47,31 @@ public abstract class Tower : MonoBehaviour {
         }
     }
 
-    /// <summary>
-    /// A queue of monsters that the tower can attack
-    /// </summary>
+    public float DebuffDuration 
+    {
+        get
+        {
+            return debuffDuration;
+        }
+        set
+        {
+            this.debuffDuration = value;    
+        }
+    }
+
+    public float Proc
+    {
+        get
+        {
+            return proc;
+        }
+
+        set
+        {
+            this.proc = value;
+        }
+    }
+   
     private Queue<Monster> monsters = new Queue<Monster>();
 
     private bool canAttack = true;
@@ -144,6 +172,8 @@ public abstract class Tower : MonoBehaviour {
             monsters.Enqueue(other.GetComponent<Monster>());
         }
     }
+
+    public abstract Debuff GetDebuff();
 
     public void OnTriggerExit2D(Collider2D other)
     {

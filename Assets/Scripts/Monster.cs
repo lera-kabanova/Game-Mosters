@@ -11,6 +11,12 @@ public class Monster : MonoBehaviour
 
     private Stack<Node> path;
 
+    private List<Debuff> debuffs = new List<Debuff>();
+
+    private List<Debuff> debuffsToRemove = new List<Debuff>();
+
+    private List<Debuff> newDebuffs = new List<Debuff>();
+
     [SerializeField]
     private Element elementType;
 
@@ -23,6 +29,14 @@ public class Monster : MonoBehaviour
     public Point GridPosition { get; set; }
 
     public bool IsActive { get; set; }
+
+    public Element ElementType
+    {
+        get
+        {
+            return elementType;
+        }
+    }
 
     [SerializeField]
     private GameObject upgradePanel;
@@ -50,6 +64,7 @@ public class Monster : MonoBehaviour
 
     private void Update()
     {
+        HandleDebuffs();
         Move();
     }
 
@@ -198,7 +213,7 @@ public class Monster : MonoBehaviour
         GameManager.Instance.Pool.ReleaseObject(gameObject);
     }
 
-    public void TakeDamage(int damage, Element dmgSource)
+    public void TakeDamage(float damage, Element dmgSource)
     {
         if(IsActive)
         {
@@ -216,6 +231,40 @@ public class Monster : MonoBehaviour
                 IsActive = false;
                 GetComponent<SpriteRenderer>().sortingOrder--;
             }
+        }
+    }
+
+    public void AddDebuff(Debuff debuff)
+    {
+        if(!debuffs.Exists(x => x.GetType() == debuff.GetType()))
+        {
+            newDebuffs.Add(debuff);
+        }
+        
+    }
+
+    public void RemoveDebuff(Debuff debuff)
+    {
+        debuffsToRemove.Add(debuff);
+    }
+
+    private void HandleDebuffs()
+    {
+
+        if(newDebuffs.Count > 0)
+        {
+            debuffs.AddRange(newDebuffs);
+            newDebuffs.Clear();
+        }
+
+        foreach(Debuff debuff in debuffsToRemove)
+        {
+            debuffs.Remove(debuff);
+        }
+        debuffsToRemove.Clear();
+        foreach(Debuff debuff in debuffs)
+        {
+            debuff.Update();
         }
     }
 }
