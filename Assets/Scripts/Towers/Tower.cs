@@ -2,17 +2,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Element { STORM, FIRE, FROST, POISON, NONE}
+public enum Element {STORM, FIRE, FROST, POISON, NONE }
+
 public abstract class Tower : MonoBehaviour {
 
+    /// <summary>
+    /// This is the projectiles type
+    /// </summary>
     [SerializeField]
     private string projectileType;
 
+    /// <summary>
+    /// The projectile's speed
+    /// </summary>
     [SerializeField]
     private float projectileSpeed;
 
+    /// <summary>
+    /// The projectile's animator
+    /// </summary>
     private Animator myAnimator;
 
+    /// <summary>
+    /// The damage that the projectile will deal
+    /// </summary>
     [SerializeField]
     private int damage;
 
@@ -22,23 +35,66 @@ public abstract class Tower : MonoBehaviour {
     [SerializeField]
     private float proc;
 
+    /// <summary>
+    /// The tower's sprite renderer
+    /// </summary>
+    private SpriteRenderer mySpriteRenderer;
+
+    /// <summary>
+    /// The tower's current target
+    /// </summary>
+    private Monster target;
+
+    /// <summary>
+    /// A queue of monsters that the tower can attack
+    /// </summary>
+    private Queue<Monster> monsters = new Queue<Monster>();
+
+    /// <summary>
+    /// indicates, if the tower can attack
+    /// </summary>
+    private bool canAttack = true;
+
+    /// <summary>
+    /// Attack timer, for checking if we can attack or not
+    /// </summary>
+    private float attackTimer;
+
+    /// <summary>
+    /// Cooldown for the attack
+    /// </summary>
+    [SerializeField]
+    private float attackCooldown;
+
+    /// <summary>
+    /// The element type of the projectile
+    /// </summary>
     public Element ElementType { get; protected set; }
+
+    /// <summary>
+    /// The projectile's price
+    /// </summary>
     public int Price { get; set; }
+
+    /// <summary>
+    /// Property for accessing the projectile's speed
+    /// </summary>
     public float ProjectileSpeed
     {
         get { return projectileSpeed; }
     }
 
-
-    private SpriteRenderer mySpriteRenderer;
-
-    private Monster target;
-
+    /// <summary>
+    /// Property for accessing the projectile's target
+    /// </summary>
     public Monster Target
     {
         get { return target; }
     }
 
+    /// <summary>
+    /// Property for accessing the projectile's damage
+    /// </summary>
     public int Damage
     {
         get
@@ -47,15 +103,16 @@ public abstract class Tower : MonoBehaviour {
         }
     }
 
-    public float DebuffDuration 
+    public float DebuffDuration
     {
         get
         {
             return debuffDuration;
         }
+
         set
         {
-            this.debuffDuration = value;    
+            this.debuffDuration = value;
         }
     }
 
@@ -71,18 +128,9 @@ public abstract class Tower : MonoBehaviour {
             this.proc = value;
         }
     }
-   
-    private Queue<Monster> monsters = new Queue<Monster>();
 
-    private bool canAttack = true;
-
-    private float attackTimer;
-
-    [SerializeField]
-    private float attackCooldown;
-
-	// Use this for initialization
-	void Awake()
+    // Use this for initialization
+    void Awake()
     {
         myAnimator = transform.parent.GetComponent<Animator>();
         mySpriteRenderer = GetComponent<SpriteRenderer>();
@@ -91,7 +139,6 @@ public abstract class Tower : MonoBehaviour {
 	// Update is called once per frame
 	void Update ()
     {
-
         Attack();
 	}
 
@@ -139,16 +186,15 @@ public abstract class Tower : MonoBehaviour {
             }
          
         }
-
         else if (monsters.Count > 0)
         {
-            target= monsters.Dequeue(); 
+            target = monsters.Dequeue();
+        }
+        if (target != null && !target.Alive)
+        {
+            target = null;
         }
 
-        if(target != null && !target.Alive)
-        {
-            target = null;  
-        }
     }
 
     /// <summary>

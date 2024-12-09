@@ -131,9 +131,10 @@ public class TileScript : MonoBehaviour
         //Makes sure that it isn't empty
         IsEmpty = false;
 
-        myTower.Price = GameManager.Instance.ClickedBtn.Price;
         //Sets the color back to white
         ColorTile(Color.white);
+
+        myTower.Price = GameManager.Instance.ClickedBtn.Price;
 
         //Buys the tower
         GameManager.Instance.BuyTower();

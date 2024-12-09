@@ -1,16 +1,17 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class FireDebuff : Debuff
 {
+
     private float tickTime;
 
     private float timeSinceTick;
 
     private float tickDamage;
 
-    public FireDebuff(float tickDamage, float tickTime, float duration, Monster target) : base(target, duration)
+    public FireDebuff(float tickDamage, float tickTime, float duration ,Monster target) : base(target, duration)
     {
         this.tickDamage = tickDamage;
         this.tickTime = tickTime;
@@ -18,17 +19,19 @@ public class FireDebuff : Debuff
 
     public override void Update()
     {
-        if(target!= null)
+        if (target != null)
         {
             timeSinceTick += Time.deltaTime;
 
-            if(timeSinceTick >= tickTime)
+            if (timeSinceTick >= tickTime)
             {
-                timeSinceTick= 0;
+                timeSinceTick = 0;
+
                 target.TakeDamage(tickDamage, Element.FIRE);
             }
         }
-        
+
+     
 
         base.Update();
     }

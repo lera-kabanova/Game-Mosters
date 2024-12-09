@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -6,10 +6,11 @@ public abstract class Debuff
 {
     protected Monster target;
 
-
     private float duration;
 
     private float elapsed;
+
+
     public Debuff(Monster target, float duration)
     {
         this.target = target;
@@ -20,7 +21,7 @@ public abstract class Debuff
     {
         elapsed += Time.deltaTime;
 
-        if(elapsed >= duration)
+        if (elapsed >= duration)
         {
             Remove();
         }
@@ -28,7 +29,7 @@ public abstract class Debuff
 
     public virtual void Remove()
     {
-        if(target != null)
+        if (target != null)
         {
             target.RemoveDebuff(this);
         }

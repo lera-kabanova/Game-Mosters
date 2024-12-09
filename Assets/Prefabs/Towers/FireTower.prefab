@@ -218,13 +218,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1115619835523882}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 36ae1c5eb2c01534f9159a25d75191b8, type: 3}
+  m_Script: {fileID: 11500000, guid: b71b675260126eb478bad17fa02b354b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   projectileType: FireProjectile
   projectileSpeed: 3
   damage: 5
-  debuffDuration: 1
+  debuffDuration: 10
   proc: 100
   attackCooldown: 3
   tickTime: 1

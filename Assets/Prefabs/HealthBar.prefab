@@ -87,15 +87,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 3843162651049708040}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 086bcb4b9c681ec41947a11ad4038b33, type: 3}
+  m_Script: {fileID: 11500000, guid: 5630941393d7c45468b284bac29879d1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lerpSpeed: 2
   content: {fileID: 3843162651935951019}
   valueText: {fileID: 0}
-  fullColor: {r: 0, g: 1, b: 0.019607844, a: 0}
-  lowColor: {r: 1, g: 0.25490198, b: 0, a: 0}
+  lerpSpeed: 2
   lerpColors: 0
+  fullColor: {r: 0, g: 0, b: 0, a: 0}
+  lowColor: {r: 0, g: 0, b: 0, a: 0}
 --- !u!1 &3843162651935951017
 GameObject:
   m_ObjectHideFlags: 0

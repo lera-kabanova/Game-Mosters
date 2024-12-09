@@ -1,9 +1,10 @@
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FireTower : Tower
-{
+public class FireTower : Tower {
+
     [SerializeField]
     private float tickTime;
 
@@ -33,6 +34,6 @@ public class FireTower : Tower
 
     public override Debuff GetDebuff()
     {
-        return new FireDebuff(TickDamage, tickTime, DebuffDuration, Target);
+        return new FireDebuff(TickDamage,tickTime,DebuffDuration,Target);
     }
 }

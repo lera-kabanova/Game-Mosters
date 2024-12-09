@@ -2,10 +2,6 @@
 using System.Collections;
 using UnityEngine.UI;
 using TMPro;
-/// <summary>
-/// This script is attached to all the buttons in the right side on the screen
-/// These are the buttons, that we use when we buy towers
-/// </summary>
 public class TowerBtn : MonoBehaviour {
 
     /// <summary>

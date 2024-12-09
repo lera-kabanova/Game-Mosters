@@ -218,7 +218,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1767696791536788}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4dbb11ed8a221c74093ab1541b9981a7, type: 3}
+  m_Script: {fileID: 11500000, guid: b98777405114ab040add45206b17a50f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   projectileType: FrostProjectile
