@@ -223,7 +223,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   projectileType: PoisonProjectile
   projectileSpeed: 3
-  damage: 5
+  damage: 1
   debuffDuration: 5
   proc: 100
-  attackCooldown: 3
+  attackCooldown: 5
+  tickTime: 5
+  splashPrefab: {fileID: -4615177880668689280, guid: 5f4c5700746196647abb46604d5fb30f, type: 3}
+  splashDamage: 5
