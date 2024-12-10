@@ -4,8 +4,13 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using TMPro;
+
+public delegate void CurrencyChanged();
+
 public class GameManager : Singleton<GameManager>
 {
+
+    public event CurrencyChanged Changed;
     /// <summary>
     /// a property for the towerBtn
     /// </summary>
@@ -78,6 +83,7 @@ public class GameManager : Singleton<GameManager>
         {
             this.currency = value;
             this.currencyTxt.text = value.ToString() + " <color=#84f542>$</color>";
+            OnCurrencyChanged();
         }
     }
 
@@ -112,7 +118,7 @@ public class GameManager : Singleton<GameManager>
     void Start ()
     {
         Lives = 10;
-        Currency = 100;
+        Currency = 5    ;
 	}
 	
 	// Update is called once per frame
@@ -151,6 +157,14 @@ public class GameManager : Singleton<GameManager>
             Hover.Instance.Deactivate();
         }
         
+    }
+
+    public void OnCurrencyChanged()
+    {
+        if(Changed != null)
+        {
+            Changed();
+        }
     }
 
     /// <summary>
@@ -232,7 +246,7 @@ public class GameManager : Singleton<GameManager>
 
         for (int i = 0; i < wave; i++)
         {
-            int monterIndex = Random.Range(0, 4);
+            int monterIndex = 0; //Random.Range(0, 4);
 
             string type = string.Empty;
 

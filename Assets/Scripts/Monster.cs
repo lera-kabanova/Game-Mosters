@@ -56,11 +56,26 @@ public class Monster : MonoBehaviour
     /// </summary>
     public bool IsActive { get; set; }
 
+    public float MaxSpeed { get; set; }
+
     public Element ElementType
     {
         get
         {
             return elementType;
+        }
+    }
+
+    public float Speed
+    {
+        get
+        {
+            return speed;
+        }
+
+        set
+        {
+            this.speed = value;
         }
     }
 
@@ -74,6 +89,7 @@ public class Monster : MonoBehaviour
         //Sets up references to the components
         myAnimator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        MaxSpeed = speed;
         health.Initialize();
     }
 
@@ -94,7 +110,7 @@ public class Monster : MonoBehaviour
         this.health.CurrentValue = this.health.MaxVal;
 
         //Starts to scale the monsters
-        StartCoroutine(Scale(new Vector3(0.1f, 0.1f), new Vector3(1, 1),false));
+        StartCoroutine(Scale(new Vector3(0.1f, 0.1f), new Vector3(1, 1), false));
 
         //Sets the monsters path
         SetPath(LevelManager.Instance.Path);
@@ -139,7 +155,7 @@ public class Monster : MonoBehaviour
         if (IsActive)
         {
             //Move the unit towards the next destination
-            transform.position = Vector2.MoveTowards(transform.position, destination, speed * Time.deltaTime);
+            transform.position = Vector2.MoveTowards(transform.position, destination, Speed * Time.deltaTime);
 
             //Checks if we arrived at the destination
             if (transform.position == destination)
@@ -234,7 +250,7 @@ public class Monster : MonoBehaviour
         if (other.tag == "RedPortal")//If we collide with the red portal
         {
             //Start scaling the monster down
-            StartCoroutine(Scale(new Vector3(1, 1), new Vector3(0.1f, 0.1f),true));
+            StartCoroutine(Scale(new Vector3(1, 1), new Vector3(0.1f, 0.1f), true));
 
             //Plays the portal animation
             other.GetComponent<Portal>().Open();
@@ -253,6 +269,9 @@ public class Monster : MonoBehaviour
     /// </summary>
     public void Release()
     {
+        //Removes all debuffs
+        debuffs.Clear();
+
         //Makes sure that it isn't active
         IsActive = false;
 
@@ -291,7 +310,7 @@ public class Monster : MonoBehaviour
 
             }
         }
-       
+
     }
 
     public void AddDebuff(Debuff debuff)

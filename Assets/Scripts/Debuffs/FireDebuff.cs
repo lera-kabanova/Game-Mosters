@@ -11,7 +11,7 @@ public class FireDebuff : Debuff
 
     private float tickDamage;
 
-    public FireDebuff(float tickDamage, float tickTime, float duration ,Monster target) : base(target, duration)
+    public FireDebuff(float tickDamage, float tickTime, float duration, Monster target) : base(target, duration)
     {
         this.tickDamage = tickDamage;
         this.tickTime = tickTime;
@@ -31,7 +31,7 @@ public class FireDebuff : Debuff
             }
         }
 
-     
+
 
         base.Update();
     }

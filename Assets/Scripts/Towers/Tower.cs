@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public enum Element {STORM, FIRE, FROST, POISON, NONE }
+public enum Element { STORM, FIRE, FROST, POISON, NONE }
 
-public abstract class Tower : MonoBehaviour {
+public abstract class Tower : MonoBehaviour
+{
 
     /// <summary>
     /// This is the projectiles type
@@ -134,13 +135,13 @@ public abstract class Tower : MonoBehaviour {
     {
         myAnimator = transform.parent.GetComponent<Animator>();
         mySpriteRenderer = GetComponent<SpriteRenderer>();
-	}
-	
-	// Update is called once per frame
-	void Update ()
+    }
+
+    // Update is called once per frame
+    void Update()
     {
         Attack();
-	}
+    }
 
     /// <summary>
     /// Selects the tower
@@ -172,7 +173,7 @@ public abstract class Tower : MonoBehaviour {
         if (target == null && monsters.Count > 0)
         {
             target = monsters.Dequeue();
-            
+
         }
         if (target != null && target.IsActive)//If we have a target that is active
         {
@@ -184,13 +185,13 @@ public abstract class Tower : MonoBehaviour {
 
                 canAttack = false;
             }
-         
+
         }
         else if (monsters.Count > 0)
         {
             target = monsters.Dequeue();
         }
-        if (target != null && !target.Alive)
+        if (target != null && !target.Alive || target != null && !target.IsActive)
         {
             target = null;
         }
