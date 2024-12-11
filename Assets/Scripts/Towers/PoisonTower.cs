@@ -13,7 +13,7 @@ public class PoisonTower : Tower
     [SerializeField]
     private int splashDamage;
 
-    private int SplashDamage
+    public int SplashDamage
     {
         get
         {
@@ -21,7 +21,7 @@ public class PoisonTower : Tower
         }
     }
 
-    private float TickTime
+    public float TickTime
     {
         get
         {

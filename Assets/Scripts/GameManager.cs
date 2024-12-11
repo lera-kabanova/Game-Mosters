@@ -5,20 +5,16 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using TMPro;
 
+
+
 public delegate void CurrencyChanged();
 
 public class GameManager : Singleton<GameManager>
 {
-
     public event CurrencyChanged Changed;
-    /// <summary>
-    /// a property for the towerBtn
-    /// </summary>
+ 
     public TowerBtn ClickedBtn { get; set; }
 
-    /// <summary>
-    /// A reference to the currency text
-    /// </summary>
     private int currency;
 
     private int wave = 0;
@@ -53,8 +49,11 @@ public class GameManager : Singleton<GameManager>
     [SerializeField]
     private TMP_Text sellText;
 
+
     [SerializeField]
-    private TMP_Text statTxt;
+    private Text statTxt;
+
+   
 
     /// <summary>
     /// The current selected tower
@@ -350,6 +349,5 @@ public class GameManager : Singleton<GameManager>
     public void SetTooltipText(string txt)
     {
         statTxt.text = txt;
-       
     }
 }
