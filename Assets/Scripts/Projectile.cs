@@ -2,27 +2,42 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Projectile : MonoBehaviour {
+public class Projectile : MonoBehaviour
+{
 
+    /// <summary>
+    /// The projectile's target
+    /// </summary>
     private Monster target;
 
+    /// <summary>
+    /// The projectile's tower
+    /// </summary>
     private Tower parent;
 
+    /// <summary>
+    /// The projectile's animator
+    /// </summary>
     private Animator myAnimator;
 
+
+    /// <summary>
+    /// The element type of the projectile
+    /// </summary>
     private Element elementType;
 
-	// Use this for initialization
-	void Start ()
+    // Use this for initialization
+    void Start()
     {
+        //Creates a reference to the animator
         myAnimator = GetComponent<Animator>();
-	}
-	
-	// Update is called once per frame
-	void Update ()
+    }
+
+    // Update is called once per frame
+    void Update()
     {
         MoveToTarget();
-	}
+    }
 
     public void Initialize(Tower parent)
     {
@@ -53,35 +68,49 @@ public class Projectile : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Tries to apply a debuff to the target
+    /// </summary>
     private void ApplyDebuff()
     {
+        //Checks if the target is immune to the debuff
         if (target.ElementType != elementType)
         {
+            //Does a roll to check if we have to apply a debuff
             float roll = Random.Range(0, 100);
 
             if (roll <= parent.Proc)
             {
+                //applies the debuff
                 target.AddDebuff(parent.GetDebuff());
             }
         }
 
-      
+
     }
 
+    /// <summary>
+    /// When the projectile hits something
+    /// </summary>
+    /// <param name="other">The object the projectil hit</param>
     private void OnTriggerEnter2D(Collider2D other)
     {
+        //If we hit a monster
         if (other.tag == "Monster")
         {
             if (target.gameObject == other.gameObject)
             {
+                //Makes the monster take damage based on the tower stats
                 target.TakeDamage(parent.Damage, elementType);
 
+                //Triggers the impact animation
                 myAnimator.SetTrigger("Impact");
 
+                //Tries to apply a debuff
                 ApplyDebuff();
             }
 
-            
+
         }
 
     }

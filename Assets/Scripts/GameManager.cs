@@ -48,7 +48,13 @@ public class GameManager : Singleton<GameManager>
     private GameObject upgradePanel;
 
     [SerializeField]
+    private GameObject statsPanel;
+
+    [SerializeField]
     private TMP_Text sellText;
+
+    [SerializeField]
+    private TMP_Text statTxt;
 
     /// <summary>
     /// The current selected tower
@@ -334,5 +340,16 @@ public class GameManager : Singleton<GameManager>
 
             DeselectTower();
         }
+    }
+
+    public void ShowStats()
+    {
+        statsPanel.SetActive(!statsPanel.activeSelf);
+    }
+
+    public void SetTooltipText(string txt)
+    {
+        statTxt.text = txt;
+       
     }
 }

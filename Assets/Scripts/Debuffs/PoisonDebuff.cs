@@ -11,7 +11,7 @@ public class PoisonDebuff : Debuff
     private PoisonSplash splashPrefab;
 
     private int splashDamage;
-    public PoisonDebuff(int splashDamage, float tickTime, PoisonSplash splashPrefab, float duration, Monster target) : base(target,duration)
+    public PoisonDebuff(int splashDamage, float tickTime, PoisonSplash splashPrefab, float duration, Monster target) : base(target, duration)
     {
         this.splashDamage = splashDamage;
         this.tickTime = tickTime;
@@ -20,11 +20,11 @@ public class PoisonDebuff : Debuff
 
     public override void Update()
     {
-        if(target!= null)
+        if (target != null)
         {
             timeSinceTick += Time.deltaTime;
 
-            if(timeSinceTick >= tickTime)
+            if (timeSinceTick >= tickTime)
             {
                 timeSinceTick = 0;
                 Splash();
