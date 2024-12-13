@@ -241,18 +241,12 @@ public class Monster : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// When the monster collides with something
-    /// </summary>
-    /// <param name="other"></param>
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.tag == "RedPortal")//If we collide with the red portal
+        if (other.tag == "RedPortal")
         {
-            //Start scaling the monster down
             StartCoroutine(Scale(new Vector3(1, 1), new Vector3(0.1f, 0.1f), true));
 
-            //Plays the portal animation
             other.GetComponent<Portal>().Open();
 
             GameManager.Instance.Lives--;
@@ -264,24 +258,15 @@ public class Monster : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Releases a monster from the game into the object pool
-    /// </summary>
     public void Release()
     {
-        //Removes all debuffs
         debuffs.Clear();
 
-        //Makes sure that it isn't active
         IsActive = false;
-
-        //Makes sure that it has the correct start position
         GridPosition = LevelManager.Instance.BlueSpawn;
 
-        //Removes the monster from the game
         GameManager.Instance.RemoveMonster(this);
 
-        //Releases the object in the object pool
         GameManager.Instance.Pool.ReleaseObject(gameObject);
     }
 
@@ -299,6 +284,7 @@ public class Monster : MonoBehaviour
 
             if (health.CurrentValue <= 0)
             {
+                SoundManager.Instance.PlaySFX("Splat");
                 GameManager.Instance.Currency += 2;
 
                 myAnimator.SetTrigger("Die");
