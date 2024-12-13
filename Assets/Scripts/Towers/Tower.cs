@@ -7,26 +7,14 @@ public enum Element { STORM, FIRE, FROST, POISON, NONE }
 public abstract class Tower : MonoBehaviour
 {
 
-    /// <summary>
-    /// This is the projectiles type
-    /// </summary>
     [SerializeField]
     private string projectileType;
 
-    /// <summary>
-    /// The projectile's speed
-    /// </summary>
     [SerializeField]
     private float projectileSpeed;
 
-    /// <summary>
-    /// The projectile's animator
-    /// </summary>
     private Animator myAnimator;
 
-    /// <summary>
-    /// The damage that the projectile will deal
-    /// </summary>
     [SerializeField]
     private int damage;
 
@@ -36,40 +24,24 @@ public abstract class Tower : MonoBehaviour
     [SerializeField]
     private float proc;
 
-    /// <summary>
-    /// The tower's sprite renderer
-    /// </summary>
     private SpriteRenderer mySpriteRenderer;
 
-    /// <summary>
-    /// The tower's current target
-    /// </summary>
     private Monster target;
 
-    /// <summary>
-    /// A queue of monsters that the tower can attack
-    /// </summary>
     private Queue<Monster> monsters = new Queue<Monster>();
 
-    /// <summary>
-    /// indicates, if the tower can attack
-    /// </summary>
+ 
     private bool canAttack = true;
 
-    /// <summary>
-    /// Attack timer, for checking if we can attack or not
-    /// </summary>
     private float attackTimer;
 
-    /// <summary>
-    /// Cooldown for the attack
-    /// </summary>
     [SerializeField]
     private float attackCooldown;
 
-    /// <summary>
-    /// The element type of the projectile
-    /// </summary>
+    public int Level { get; protected set; }
+
+    public TowerUpgrade[] Upgrades { get; protected set; }
+
     public Element ElementType { get; protected set; }
 
     /// <summary>
@@ -130,11 +102,24 @@ public abstract class Tower : MonoBehaviour
         }
     }
 
+    public TowerUpgrade NextUpgrade
+    {
+        get
+        {
+            if(Upgrades.Length > Level - 1)
+            {
+                return Upgrades[Level - 1];
+            }
+            return null;
+        }
+    }
+
     // Use this for initialization
     void Awake()
     {
         myAnimator = transform.parent.GetComponent<Animator>();
         mySpriteRenderer = GetComponent<SpriteRenderer>();
+        Level = 1;
     }
 
     // Update is called once per frame
@@ -143,17 +128,12 @@ public abstract class Tower : MonoBehaviour
         Attack();
     }
 
-    /// <summary>
-    /// Selects the tower
-    /// </summary>
     public void Select()
     {
         mySpriteRenderer.enabled = !mySpriteRenderer.enabled;
+        GameManager.Instance.UpdateUpgradeTip();
     }
 
-    /// <summary>
-    /// Makes the tower attack a target
-    /// </summary>
     private void Attack()
     {
         if (!canAttack)//If we can't attack
@@ -195,9 +175,14 @@ public abstract class Tower : MonoBehaviour
 
     }
 
-    /// <summary>
-    /// Makes the tower shoot
-    /// </summary>
+    public virtual string GetStats()
+    {
+        if(NextUpgrade != null)
+        {
+            return string.Format("\nLevel: {0} \nDamage: {1} <color=#00ff00ff> +{4}</color>\nProc: {2}% <color=#00ff00ff>+{5}%</color>\nDebuff: {3}sec <color=#00ff00ff>+{6}</color>", Level, damage, proc, DebuffDuration, NextUpgrade.Damage, NextUpgrade.ProcChance, NextUpgrade.DebuffDuration);
+        }
+        return string.Format("\n Level: {0} \nDamage: {1} \nProc: {2}% \nDebuff: {3}sec", Level, damage, proc, DebuffDuration);
+    }
     private void Shoot()
     {
         //Gets a projectile from the object pool
@@ -207,6 +192,17 @@ public abstract class Tower : MonoBehaviour
         projectile.transform.position = transform.position;
 
         projectile.Initialize(this);
+    }
+
+    public virtual void Upgrade()
+    {
+        GameManager.Instance.Currency -= NextUpgrade.Price;
+        Price += NextUpgrade.Price;
+        this.damage += NextUpgrade.Damage;
+        this.proc += NextUpgrade.ProcChance;
+        this.DebuffDuration += NextUpgrade.DebuffDuration;
+        Level++;
+        GameManager.Instance.UpdateUpgradeTip();
     }
 
     public void OnTriggerEnter2D(Collider2D other)

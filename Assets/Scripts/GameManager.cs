@@ -29,6 +29,9 @@ public class GameManager : Singleton<GameManager>
     private TMP_Text livesTxt;
 
     [SerializeField]
+    private TMP_Text upgradePrice;
+
+    [SerializeField]
     private TMP_Text waveTxt;
 
     [SerializeField]
@@ -53,18 +56,16 @@ public class GameManager : Singleton<GameManager>
     [SerializeField]
     private Text statTxt;
 
-   
+    [SerializeField]
+    private GameObject inGameMenu;
 
-    /// <summary>
-    /// The current selected tower
-    /// </summary>
+    [SerializeField]
+    private GameObject optionsMenu;
+
     private Tower selectedTower;
 
     private List<Monster> activeMonsters = new List<Monster>();
 
-    /// <summary>
-    /// A property for the object pool
-    /// </summary>
     public ObjectPool Pool { get; set; }
 
     public bool WaveActive
@@ -74,9 +75,6 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    /// <summary>
-    /// Property for accessing the currency
-    /// </summary>
     public int Currency
     {
         get
@@ -123,36 +121,28 @@ public class GameManager : Singleton<GameManager>
     void Start ()
     {
         Lives = 10;
-        Currency = 5    ;
+        Currency = 50   ;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 
         HandleEscape();
+       
 	}
 
-    /// <summary>
-    /// Pick a tower then a buy button is pressed
-    /// </summary>
-    /// <param name="towerBtn">The clicked button</param>
     public void PickTower(TowerBtn towerBtn)
     {
         if (Currency >= towerBtn.Price && !WaveActive)
         {
-            //Stores the clicked button
             this.ClickedBtn = towerBtn;
 
-            //Activates the hover icon
             Hover.Instance.Activate(towerBtn.Sprite);
         }
 
  
     }
 
-    /// <summary>
-    /// Buys a tower
-    /// </summary>
     public void BuyTower()
     {
         if (Currency >= ClickedBtn.Price)
@@ -172,60 +162,57 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    /// <summary>
-    /// Selects a tower by clicking it
-    /// </summary>
-    /// <param name="tower">The clicked tower</param>
     public void SelectTower(Tower tower)
     {
-        if (selectedTower != null)//If we have selected a tower
+        if (selectedTower != null)
         {
-            //Selects the tower
             selectedTower.Select();
         }
 
-        //Sets the selected tower
         selectedTower = tower;
 
-        //Selects the tower
         selectedTower.Select();
 
-        sellText.text = "+ " + (selectedTower.Price / 2).ToString();
+        sellText.text = "+ " + (selectedTower.Price / 2).ToString() + " $";
 
         upgradePanel.SetActive(true);
 
         
     }
 
-    /// <summary>
-    /// Deselect the tower
-    /// </summary>
+
     public void DeselectTower()
     {
-        //If we have a selected tower
         if (selectedTower != null)
         {
-            //Calls select to deselect it
             selectedTower.Select();
         }
 
         upgradePanel.SetActive(false);
 
-        //Remove the reference to the tower
         selectedTower = null;
 
   
     }
 
-    /// <summary>
-    /// Handles escape presses
-    /// </summary>
     private void HandleEscape()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))//if we press escape
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            //Deactivate the hover instance
-            Hover.Instance.Deactivate();
+            if (selectedTower == null && !Hover.Instance.IsVisible)
+            {
+                ShowIngameMenu();
+            }
+            else if (Hover.Instance.IsVisible)
+            {
+                DropTower();
+            }
+            else if (selectedTower != null)
+            {
+                DeselectTower();
+            }
+
+
         }
     }
 
@@ -240,13 +227,8 @@ public class GameManager : Singleton<GameManager>
         waveBtn.SetActive(false);
     }
 
-    /// <summary>
-    /// Spawns a wave of monsters
-    /// </summary>
-    /// <returns></returns>
     private IEnumerator SpawnWave()
     {
-        //Generates the path
         LevelManager.Instance.GeneratePath();
 
         for (int i = 0; i < wave; i++)
@@ -270,8 +252,6 @@ public class GameManager : Singleton<GameManager>
                     type = "PurpleMonster";
                     break;
             }
-
-            //Requests the monster form the pool
             Monster monster = Pool.GetObject(type).GetComponent<Monster>();
 
             monster.Spawn(health);
@@ -281,7 +261,6 @@ public class GameManager : Singleton<GameManager>
                 health += 5;
             }
 
-            //Adds the monster to the activemonster list
             activeMonsters.Add(monster);
 
             yield return new WaitForSeconds(2.5f);
@@ -289,19 +268,12 @@ public class GameManager : Singleton<GameManager>
 
     }
 
-    /// <summary>
-    /// Removes a monster from the game
-    /// </summary>
-    /// <param name="monster">Monster to remove</param>
     public void RemoveMonster(Monster monster)
     {
-        //Removes the monster from the active list
         activeMonsters.Remove(monster);
 
-        //IF we don't have more active monsters and the game isn't over, then we need to show the wave button
         if (!WaveActive && !gameOver)
         {
-            //Shows the wave button
             waveBtn.SetActive(true);
         }
     }
@@ -346,8 +318,82 @@ public class GameManager : Singleton<GameManager>
         statsPanel.SetActive(!statsPanel.activeSelf);
     }
 
+    public void ShowSelectedTowerStats()
+    {
+        statsPanel.SetActive(!statsPanel.activeSelf);
+        UpdateUpgradeTip();
+    }
     public void SetTooltipText(string txt)
     {
         statTxt.text = txt;
+    }
+
+    public void UpdateUpgradeTip()
+    {
+        if (selectedTower != null)
+        {
+            Debug.Log("update");
+            sellText.text = "+ " + (selectedTower.Price / 2).ToString() + " $";
+            SetTooltipText(selectedTower.GetStats());
+
+            if (selectedTower.NextUpgrade != null)
+            {
+                upgradePrice.text = selectedTower.NextUpgrade.Price.ToString() + " $";
+            }
+            else
+            {
+                upgradePrice.text = string.Empty;
+            }
+        }
+    }
+
+    public void UpgradeTower()
+    {
+        if (selectedTower != null)
+        {
+            if (selectedTower.Level <= selectedTower.Upgrades.Length && Currency >= selectedTower.NextUpgrade.Price)
+            {
+                selectedTower.Upgrade();
+            }
+        }
+    }
+
+    public void ShowIngameMenu()
+    {
+        if (optionsMenu.activeSelf)
+        {
+            ShowMain();
+        }
+        else
+        {
+
+            inGameMenu.SetActive(!inGameMenu.activeSelf);
+            if (!inGameMenu.activeSelf)
+            {
+                Time.timeScale = 1;
+            }
+            else
+            {
+                Time.timeScale = 0;
+            }
+        }
+    }
+
+    private void DropTower()
+    {
+        ClickedBtn = null;
+        Hover.Instance.Deactivate();
+    }
+
+    public void ShowOptions()
+    {
+        inGameMenu.SetActive(false);
+        optionsMenu.SetActive(true);
+    }
+
+    public void ShowMain()
+    {
+        inGameMenu.SetActive(true);
+        optionsMenu.SetActive(false);
     }
 }

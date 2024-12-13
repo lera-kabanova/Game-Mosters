@@ -2,15 +2,11 @@
 
 public class Hover : Singleton<Hover>
 {
-    /// <summary>
-    /// A reference to the icon's spriterenderer
-    /// </summary>
     private SpriteRenderer spriteRenderer;
 
-    /// <summary>
-    /// A referenceo to the rangedcheck on the tower
-    /// </summary>
     private SpriteRenderer rangeSpriteRenderer;
+
+    public bool IsVisible { get; private set; }
 
 	// Use this for initialization
 	void Start ()
@@ -24,13 +20,9 @@ public class Hover : Singleton<Hover>
 	// Update is called once per frame
 	void Update ()
     {
-        //Makes sure that we follow the mouse
         FollowMouse();
 	}
 
-    /// <summary>
-    /// Makes the hover icon follow the mouse
-    /// </summary>
     private void FollowMouse()
     {
         if (spriteRenderer.enabled)
@@ -43,11 +35,7 @@ public class Hover : Singleton<Hover>
         }
 
     }
-
-    /// <summary>
-    /// Activates the hover icon
-    /// </summary>
-    /// <param name="sprite">The sprite to show on the hover icon</param>
+        
     public void Activate(Sprite sprite)
     {
         //Sets the correct sprite
@@ -57,6 +45,7 @@ public class Hover : Singleton<Hover>
         spriteRenderer.enabled = true;
 
         rangeSpriteRenderer.enabled = true;
+        IsVisible= true;
     }
 
     /// <summary>
@@ -71,6 +60,7 @@ public class Hover : Singleton<Hover>
 
         //Unclicks our button
         GameManager.Instance.ClickedBtn = null;
+        IsVisible= false;
 
   
     }
