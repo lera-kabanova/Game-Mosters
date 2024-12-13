@@ -296,7 +296,8 @@ public class GameManager : Singleton<GameManager>
 
     public void QuitGame()
     {
-        Application.Quit();
+        Time.timeScale = 1;
+        SceneManager.LoadScene(0);
     }
 
     public void SellTower()
