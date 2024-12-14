@@ -223,14 +223,13 @@ public class GameManager : Singleton<GameManager>
 
     public void ShowWaveSpeedMenu()
     {
-        LevelMenu.SetActive(true);  // Показываем меню
+        LevelMenu.SetActive(true);
         waveBtn.SetActive(false);
     }
 
-    // Методы для выбора скорости
     public void SelectSlowSpeed()
     {
-        selectedSpeed = 0.5f; // Устанавливаем замедленную скорость
+        selectedSpeed = 0.5f;
         EnableStartWaveButton();
         LevelMenu.SetActive(false);
     }
@@ -238,28 +237,26 @@ public class GameManager : Singleton<GameManager>
     public void SelectNormalSpeed()
     {
         selectedSpeed = 1f;
-        EnableStartWaveButton(); // Включаем кнопку "Начать волну"
+        EnableStartWaveButton();
         LevelMenu.SetActive(false);
     }
 
     public void SelectFastSpeed()
     {
         selectedSpeed = 1.4f;
-        EnableStartWaveButton(); // Включаем кнопку "Начать волну"
+        EnableStartWaveButton();
         LevelMenu.SetActive(false);
     }
 
-    // Включаем кнопку "Начать волну"
     private void EnableStartWaveButton()
     {
         waveBtn.SetActive(true);
     }
 
-    // Метод запуска волны
     public void StartWaveWithSelectedSpeed()
     {
-        LevelMenu.SetActive(false); // Скрываем меню
-        StartWave(selectedSpeed); // Запускаем волну с выбранной скоростью
+        LevelMenu.SetActive(false); 
+        StartWave(selectedSpeed); 
     }
 
 
@@ -267,7 +264,7 @@ public class GameManager : Singleton<GameManager>
     {
         foreach (Monster monster in activeMonsters)
         {
-            monster.Speed = monster.MaxSpeed * speedMultiplier; // Устанавливаем множитель для существующих монстров
+            monster.Speed = monster.MaxSpeed * speedMultiplier; 
         }
 
         wave++;
