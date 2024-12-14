@@ -92,20 +92,18 @@ public class LevelManager : Singleton<LevelManager>
 
         Vector3 worldStart = Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height));
 
-        for (int y = 0; y < mapY; y++) //The y positions
+        for (int y = 0; y < mapY; y++)
         {
-            char[] newTiles = mapData[y].ToCharArray(); //Gets all the tiles, that we need to place on the current horizontal line
+            char[] newTiles = mapData[y].ToCharArray();
 
-            for (int x = 0; x < mapX; x++) //The x positions
+            for (int x = 0; x < mapX; x++) 
             {
-                //Places the tile in the world
                 PlaceTile(newTiles[x].ToString(), x, y, worldStart);
             }
         }
 
         maxTile = Tiles[new Point(mapX - 1, mapY - 1)].transform.position;
 
-        //Sets the camera limits to the max tile position
         cameraMovement.SetLimits(new Vector3(maxTile.x + TileSize, maxTile.y - TileSize));
 
         SpawnPortals();
@@ -114,13 +112,10 @@ public class LevelManager : Singleton<LevelManager>
 
     private void PlaceTile(string tileType, int x, int y, Vector3 worldStart)
     {
-        //Parses the tiletype to an int, so that we can use it as an indexer when we create a new tile
         int tileIndex = int.Parse(tileType);
 
-        //Creates a new tile and makes a reference to that tile in the newTile variable
         TileScript newTile = Instantiate(tilePrefabs[tileIndex]).GetComponent<TileScript>();
 
-        //Uses the new tile variable to change the position of the tile
         newTile.Setup(new Point(x, y), new Vector3(worldStart.x + (TileSize * x), worldStart.y - (TileSize * y), 0),map);
 
 

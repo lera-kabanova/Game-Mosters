@@ -4,8 +4,7 @@ using UnityEngine.UI;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using TMPro;
-
-
+using System.Threading;
 
 public delegate void CurrencyChanged();
 
@@ -41,6 +40,11 @@ public class GameManager : Singleton<GameManager>
     private GameObject waveBtn;
 
     [SerializeField]
+    private GameObject LevelMenu;
+
+    private float selectedSpeed = 1f;
+
+    [SerializeField]
     private GameObject gameOverMenu;
 
     [SerializeField]
@@ -65,6 +69,7 @@ public class GameManager : Singleton<GameManager>
     private Tower selectedTower;
 
     private List<Monster> activeMonsters = new List<Monster>();
+
 
     public ObjectPool Pool { get; set; }
 
@@ -216,14 +221,59 @@ public class GameManager : Singleton<GameManager>
         }
     }
 
-    public void StartWave()
+    public void ShowWaveSpeedMenu()
     {
-        wave++;
+        LevelMenu.SetActive(true);  // Показываем меню
+        waveBtn.SetActive(false);
+    }
 
+    // Методы для выбора скорости
+    public void SelectSlowSpeed()
+    {
+        selectedSpeed = 0.5f; // Устанавливаем замедленную скорость
+        EnableStartWaveButton();
+        LevelMenu.SetActive(false);
+    }
+
+    public void SelectNormalSpeed()
+    {
+        selectedSpeed = 1f;
+        EnableStartWaveButton(); // Включаем кнопку "Начать волну"
+        LevelMenu.SetActive(false);
+    }
+
+    public void SelectFastSpeed()
+    {
+        selectedSpeed = 1.4f;
+        EnableStartWaveButton(); // Включаем кнопку "Начать волну"
+        LevelMenu.SetActive(false);
+    }
+
+    // Включаем кнопку "Начать волну"
+    private void EnableStartWaveButton()
+    {
+        waveBtn.SetActive(true);
+    }
+
+    // Метод запуска волны
+    public void StartWaveWithSelectedSpeed()
+    {
+        LevelMenu.SetActive(false); // Скрываем меню
+        StartWave(selectedSpeed); // Запускаем волну с выбранной скоростью
+    }
+
+
+    public void StartWave(float speedMultiplier)
+    {
+        foreach (Monster monster in activeMonsters)
+        {
+            monster.Speed = monster.MaxSpeed * speedMultiplier; // Устанавливаем множитель для существующих монстров
+        }
+
+        wave++;
         waveTxt.text = string.Format("Wave: <color=#84f542>{0}</color>", wave);
 
         StartCoroutine(SpawnWave());
-
         waveBtn.SetActive(false);
     }
 
@@ -255,6 +305,7 @@ public class GameManager : Singleton<GameManager>
             Monster monster = Pool.GetObject(type).GetComponent<Monster>();
 
             monster.Spawn(health);
+            monster.Speed = monster.MaxSpeed * selectedSpeed;
 
             if (wave % 3 == 0)
             {

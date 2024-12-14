@@ -4,17 +4,9 @@ using System.Collections.Generic;
 
 public class Monster : MonoBehaviour
 {
-
-    /// <summary>
-    /// The units movement speed
-    /// </summary>
     [SerializeField]
     private float speed;
 
-    /// <summary>
-    /// This stack contains the path that the Unit can walk on
-    /// This path should be generated with the AStar algorithm
-    /// </summary>
     private Stack<Node> path;
 
     private List<Debuff> debuffs = new List<Debuff>();
@@ -30,9 +22,6 @@ public class Monster : MonoBehaviour
 
     private int invulnerability = 2;
 
-    /// <summary>
-    /// A reference to the Unit's animator
-    /// </summary>
     protected Animator myAnimator;
 
     [SerializeField]
@@ -46,14 +35,8 @@ public class Monster : MonoBehaviour
         get { return health.CurrentValue > 0; }
     }
 
-    /// <summary>
-    /// The Unit's grid position
-    /// </summary>
     public Point GridPosition { get; set; }
 
-    /// <summary>
-    /// Indicates if the Unit is active
-    /// </summary>
     public bool IsActive { get; set; }
 
     public float MaxSpeed { get; set; }
@@ -79,14 +62,10 @@ public class Monster : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// The unit's next destination
-    /// </summary>
     private Vector3 destination;
 
     private void Awake()
     {
-        //Sets up references to the components
         myAnimator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         MaxSpeed = speed;
@@ -99,9 +78,6 @@ public class Monster : MonoBehaviour
         Move();
     }
 
-    /// <summary>
-    /// Spawns the monster in our world
-    /// </summary>
     public void Spawn(int health)
     {
         transform.position = LevelManager.Instance.BluePortal.transform.position;
@@ -109,34 +85,22 @@ public class Monster : MonoBehaviour
         this.health.MaxVal = health;
         this.health.CurrentValue = this.health.MaxVal;
 
-        //Starts to scale the monsters
         StartCoroutine(Scale(new Vector3(0.1f, 0.1f), new Vector3(1, 1), false));
 
-        //Sets the monsters path
         SetPath(LevelManager.Instance.Path);
     }
 
-    /// <summary>
-    /// Scales a monster up or down
-    /// </summary>
-    /// <param name="from">start scale</param>
-    /// <param name="to">end scale</param>
-    /// <returns></returns>
     public IEnumerator Scale(Vector3 from, Vector3 to, bool remove)
     {
-        //The scaling progress
         float progress = 0;
 
-        //As long as the progress is les than 1, then we need to keep scaling
         while (progress <= 1)
         {
-            //Scales themonster
             transform.localScale = Vector3.Lerp(from, to, progress);
             progress += Time.deltaTime;
             yield return null;
         }
 
-        //Makes sure that is has the correct scale after scaling
         transform.localScale = to;
 
         IsActive = true;
@@ -147,29 +111,20 @@ public class Monster : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Makes the unity move along the given path
-    /// </summary>
     public void Move()
     {
         if (IsActive)
         {
-            //Move the unit towards the next destination
             transform.position = Vector2.MoveTowards(transform.position, destination, Speed * Time.deltaTime);
 
-            //Checks if we arrived at the destination
             if (transform.position == destination)
             {
-                //If we have a path and we have more nodes, then we need to keep moving
                 if (path != null && path.Count > 0)
                 {
-                    //Animates the Unit based on the gridposition
                     Animate(GridPosition, path.Peek().GridPosition);
 
-                    //Sets the new gridPosition
                     GridPosition = path.Peek().GridPosition;
 
-                    //Sets a new destination
                     destination = path.Pop().WorldPosition;
 
                 }
@@ -178,61 +133,40 @@ public class Monster : MonoBehaviour
 
     }
 
-    /// <summary>
-    /// Gives the Unit a path to walk on
-    /// </summary>
-    /// <param name="newPath">The unit's new path</param>
-    /// <param name="active">Indicates if the unit is active</param>
     public void SetPath(Stack<Node> newPath)
     {
-        if (newPath != null) //If we have a path
+        if (newPath != null)
         {
-            //Sets the new path as the current path
             this.path = newPath;
 
-            //Animates the Unit based on the gridposition
             Animate(GridPosition, path.Peek().GridPosition);
 
-            //Sets the new gridPosition
             GridPosition = path.Peek().GridPosition;
 
-            //Sets a new destination
             destination = path.Pop().WorldPosition;
         }
     }
 
-    /// <summary>
-    /// Animates the Unit according to the current action
-    /// </summary>
-    /// <param name="currentPos"></param>
-    /// <param name="newPos"></param>
     public void Animate(Point currentPos, Point newPos)
     {
-        //The code below animates the unit based on the moving direction
-
-        //If we are moving down
         if (currentPos.Y > newPos.Y)
         {
             myAnimator.SetInteger("Horizontal", 0);
 
             myAnimator.SetInteger("Vertical", 1);
         }
-        //IF we are moving up
         else if (currentPos.Y < newPos.Y)
         {
             myAnimator.SetInteger("Horizontal", 0);
             myAnimator.SetInteger("Vertical", -1);
         }
-        //If we aren't moving up or down
         if (currentPos.Y == newPos.Y)
         {
-            //If we are moving left
             if (currentPos.X > newPos.X)
             {
                 myAnimator.SetInteger("Vertical", 0);
                 myAnimator.SetInteger("Horizontal", -1);
             }
-            //If we are moving right
             else if (currentPos.X < newPos.X)
             {
                 myAnimator.SetInteger("Vertical", 0);

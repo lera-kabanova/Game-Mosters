@@ -3383,12 +3383,12 @@ GameObject:
   - component: {fileID: 723425375}
   - component: {fileID: 723425374}
   m_Layer: 5
-  m_Name: InGameMenu (1)
+  m_Name: LevelMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &723425373
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3409,7 +3409,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: -0.00002861, y: 3.5247}
-  m_SizeDelta: {x: 941.7563, y: 1013.3228}
+  m_SizeDelta: {x: 941.76, y: 858.71}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &723425374
 MonoBehaviour:
@@ -5673,7 +5673,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Paused
+  m_Text: Level
 --- !u!222 &1289746390
 CanvasRenderer:
   m_ObjectHideFlags: 0
