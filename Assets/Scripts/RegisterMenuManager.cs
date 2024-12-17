@@ -109,8 +109,6 @@ public class RegisterMenuManager : MonoBehaviour
                 insertCommand.Parameters.AddWithValue("@Login", username);
                 insertCommand.Parameters.AddWithValue("@Password", password); // Пароль сохранён как есть (рекомендуется использовать хеширование)
              
-                
-
                 try
                 {
                     insertCommand.ExecuteNonQuery();
@@ -121,7 +119,6 @@ public class RegisterMenuManager : MonoBehaviour
                     passwordInput.text = "";
                     confirmPasswordInput.text = "";
 
-                   
                 }
                 catch (Exception e)
                 {

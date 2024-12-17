@@ -46,4 +46,8 @@ public class SelectedMenuManager : MonoBehaviour
         SelectedMenu.SetActive(false);
         LoginMenu.SetActive(true);
     }
+    public void Quit()
+    {
+        Application.Quit();
+    }
 }

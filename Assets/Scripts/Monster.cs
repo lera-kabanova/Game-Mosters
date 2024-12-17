@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 
 public class Monster : MonoBehaviour
 {
@@ -80,15 +81,24 @@ public class Monster : MonoBehaviour
 
     public void Spawn(int health)
     {
+        // Устанавливаем позицию монстра на точку выхода
         transform.position = LevelManager.Instance.BluePortal.transform.position;
+
+        // Сбрасываем параметры здоровья
         this.health.Bar.Reset();
         this.health.MaxVal = health;
         this.health.CurrentValue = this.health.MaxVal;
 
+        // Анимация масштабирования появления
         StartCoroutine(Scale(new Vector3(0.1f, 0.1f), new Vector3(1, 1), false));
 
+        // Устанавливаем путь монстра
         SetPath(LevelManager.Instance.Path);
+
+        // Устанавливаем скорость монстра с учётом текущего множителя
+        this.Speed = this.MaxSpeed * GameManager.Instance.selectedSpeed;
     }
+
 
     public IEnumerator Scale(Vector3 from, Vector3 to, bool remove)
     {
@@ -220,7 +230,7 @@ public class Monster : MonoBehaviour
             {
                 SoundManager.Instance.PlaySFX("Splat");
                 GameManager.Instance.Currency += 2;
-
+                //GameManager.Instance.totalCurrencyEarned += 2;
                 // Увеличиваем счетчик убитых монстров
                 GameManager.Instance.totalMonstersKilled++;
 

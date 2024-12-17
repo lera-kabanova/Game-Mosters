@@ -11,11 +11,14 @@ public delegate void CurrencyChanged();
 public class GameManager : Singleton<GameManager>
 {
 
-    public TMP_Text ahsdg;
+    public TMP_Text KilledMonsters;
+
+
+    public TMP_Text Dollars;
 
 
     public int totalMonstersKilled = 0;
-    private int totalCurrencyEarned = 0;
+    public int totalCurrencyEarned = 0;
 
     public event CurrencyChanged Changed;
  
@@ -49,7 +52,7 @@ public class GameManager : Singleton<GameManager>
     [SerializeField]
     private GameObject LevelMenu;
 
-    private float selectedSpeed = 1f;
+    public float selectedSpeed = 1f;
 
     [SerializeField]
     private GameObject gameOverMenu;
@@ -77,7 +80,7 @@ public class GameManager : Singleton<GameManager>
 
     private List<Monster> activeMonsters = new List<Monster>();
 
-
+    private bool isLevelDifficultySelected = false;
     public ObjectPool Pool { get; set; }
 
     public bool WaveActive
@@ -96,6 +99,7 @@ public class GameManager : Singleton<GameManager>
 
         set
         {
+
             if (value > currency)
             {
                 totalCurrencyEarned += value - currency; // Добавляем разницу
@@ -139,7 +143,9 @@ public class GameManager : Singleton<GameManager>
     {
         Lives = 10;
         Currency = 50   ;
-	}
+        totalMonstersKilled = 0; // Сброс счётчика убитых монстров
+        totalCurrencyEarned = 0;
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -216,20 +222,28 @@ public class GameManager : Singleton<GameManager>
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if (selectedTower == null && !Hover.Instance.IsVisible)
+            if (LevelMenu.activeSelf) // Если LevelMenu активно
             {
-                ShowIngameMenu();
+                LevelMenu.SetActive(false); // Скрываем LevelMenu
+                inGameMenu.SetActive(true);
             }
-            else if (Hover.Instance.IsVisible)
+            else if (inGameMenu.activeSelf) // Если меню паузы активно
             {
-                DropTower();
+                inGameMenu.SetActive(false); // Скрываем меню паузы
+                LevelMenu.SetActive(true); // Показываем LevelMenu
             }
-            else if (selectedTower != null)
+            else if (selectedTower == null && !Hover.Instance.IsVisible) // Если ни башня, ни наведение не активно
             {
-                DeselectTower();
+                ShowIngameMenu(); // Показываем меню паузы
             }
-
-
+            else if (Hover.Instance.IsVisible) // Если пользователь что-то выбирает
+            {
+                DropTower(); // Убираем выбор
+            }
+            else if (selectedTower != null) // Если башня выбрана
+            {
+                DeselectTower(); // Снимаем выбор
+            }
         }
     }
 
@@ -244,6 +258,8 @@ public class GameManager : Singleton<GameManager>
         selectedSpeed = 0.5f;
         EnableStartWaveButton();
         LevelMenu.SetActive(false);
+        isLevelDifficultySelected = true;  // После выбора сложности
+
     }
 
     public void SelectNormalSpeed()
@@ -251,6 +267,8 @@ public class GameManager : Singleton<GameManager>
         selectedSpeed = 1f;
         EnableStartWaveButton();
         LevelMenu.SetActive(false);
+        isLevelDifficultySelected = true;  // После выбора сложности
+
     }
 
     public void SelectFastSpeed()
@@ -258,6 +276,8 @@ public class GameManager : Singleton<GameManager>
         selectedSpeed = 1.4f;
         EnableStartWaveButton();
         LevelMenu.SetActive(false);
+        isLevelDifficultySelected = true;  // После выбора сложности
+
     }
 
     private void EnableStartWaveButton()
@@ -288,6 +308,7 @@ public class GameManager : Singleton<GameManager>
 
     private IEnumerator SpawnWave()
     {
+        int monstersToSpawn = Mathf.Min(wave, 2);
         LevelManager.Instance.GeneratePath();
 
         for (int i = 0; i < wave; i++)
@@ -311,11 +332,15 @@ public class GameManager : Singleton<GameManager>
                     type = "PurpleMonster";
                     break;
             }
+
+            // Получаем монстра из пула
             Monster monster = Pool.GetObject(type).GetComponent<Monster>();
 
+            // Обновляем параметры монстра
             monster.Spawn(health);
-            monster.Speed = monster.MaxSpeed * selectedSpeed;
+            monster.Speed = monster.MaxSpeed * selectedSpeed; // Устанавливаем корректную скорость
 
+            // Увеличиваем здоровье каждые 3 волны
             if (wave % 3 == 0)
             {
                 health += 5;
@@ -325,23 +350,23 @@ public class GameManager : Singleton<GameManager>
 
             yield return new WaitForSeconds(2.5f);
         }
-
     }
 
     public void RemoveMonster(Monster monster)
     {
+        // Удаляем монстра из активного списка
         activeMonsters.Remove(monster);
+        
+        // Возвращаем скорость монстра для повторного использования
+        monster.Speed = monster.MaxSpeed; // Сбрасываем скорость до стандартной
 
         if (!WaveActive && !gameOver)
         {
             waveBtn.SetActive(true);
         }
     }
-    public void AddKilledMonster()
-    {
-        totalMonstersKilled++;
-        totalCurrencyEarned += 2; // 2 доллара за каждого убитого монстра
-    }
+
+    
     public void GameOver()
     {
         if (!gameOver)
@@ -350,15 +375,20 @@ public class GameManager : Singleton<GameManager>
             gameOverMenu.SetActive(true);
 
             // Вывод статистики в консоль
-            ahsdg.text = $"Game Over! Monsters killed: {totalMonstersKilled}, Total money earned: {totalCurrencyEarned}"    ;
+           //ahsdg.text = $"Game Over! Monsters killed: {totalMonstersKilled}, Total money earned: {totalCurrencyEarned}"    ;
+            KilledMonsters.text = $"Monsters killed: {totalMonstersKilled}";
+            Dollars.text = $" Total money: {totalCurrencyEarned}<color=#84f542>$</color>";
         }
     }
 
     public void Restart()
     {
+        LevelMenu.SetActive(true);
+        inGameMenu.SetActive(false);
         Time.timeScale = 1;
 
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+       
     }
 
     public void QuitGame()
@@ -434,18 +464,26 @@ public class GameManager : Singleton<GameManager>
         }
         else
         {
-
-            inGameMenu.SetActive(!inGameMenu.activeSelf);
-            if (!inGameMenu.activeSelf)
+            if (!isLevelDifficultySelected) // Если уровень сложности еще не выбран
             {
-                Time.timeScale = 1;
+                inGameMenu.SetActive(false);
+                LevelMenu.SetActive(true); // Показываем меню выбора уровня сложности
             }
             else
             {
-                Time.timeScale = 0;
+                inGameMenu.SetActive(!inGameMenu.activeSelf);
+                if (!inGameMenu.activeSelf)
+                {
+                    Time.timeScale = 1; // Возвращаем нормальную скорость игры
+                }
+                else
+                {
+                    Time.timeScale = 0; // Пауза в игре
+                }
             }
         }
     }
+
 
     private void DropTower()
     {
