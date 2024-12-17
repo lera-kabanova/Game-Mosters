@@ -32,6 +32,8 @@ public class LoginMenuManager : MonoBehaviour
         // Настраиваем поля ввода для отображения паролей как звездочек
         passwordInput.contentType = TMP_InputField.ContentType.Password;
         passwordInput.ForceLabelUpdate();
+        
+        
     }
 
     // Метод для входа пользователя
@@ -67,6 +69,8 @@ public class LoginMenuManager : MonoBehaviour
                         // Успешный вход
                         ShowErrorText("Login successful!");
                         SceneManager.LoadScene(1); // Замените на нужную сцену
+                        PlayerPrefs.SetString("CurrentUsername", username);
+
                     }
                     else
                     {

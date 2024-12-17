@@ -42,6 +42,8 @@ public class RegisterMenuManager : MonoBehaviour
 
     void Start()
     {
+        CreateUsersTable();
+        CreateTablesIfNotExists();
         // Настраиваем поля ввода для отображения паролей как звездочек
         passwordInput.contentType = TMP_InputField.ContentType.Password;
         confirmPasswordInput.contentType = TMP_InputField.ContentType.Password;
@@ -49,6 +51,56 @@ public class RegisterMenuManager : MonoBehaviour
         passwordInput.ForceLabelUpdate();
         confirmPasswordInput.ForceLabelUpdate();
 
+    }
+    void CreateUsersTable()
+    {
+        string conn = "URI=file:" + Application.dataPath + "/Database.db"; // Путь к базе данных
+        using (SqliteConnection connection = new SqliteConnection(conn))
+        {
+            connection.Open();
+
+            string createTableQuery = @"
+                CREATE TABLE IF NOT EXISTS Users (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Login TEXT NOT NULL UNIQUE,
+                    Password TEXT NOT NULL
+                );";
+
+            using (SqliteCommand command = new SqliteCommand(createTableQuery, connection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
+    }
+
+    void CreateTablesIfNotExists()
+    {
+        string conn = "URI=file:" + Application.dataPath + "/Database.db";
+        using (SqliteConnection connection = new SqliteConnection(conn))
+        {
+            connection.Open();
+            string createMonstersTableQuery = @"
+            CREATE TABLE IF NOT EXISTS MonstersKilled (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Username TEXT NOT NULL,
+                KilledCount INTEGER NOT NULL
+            );";
+            using (SqliteCommand command = new SqliteCommand(createMonstersTableQuery, connection))
+            {
+                command.ExecuteNonQuery();
+            }
+
+            string createMoneyTableQuery = @"
+            CREATE TABLE IF NOT EXISTS MoneyEarned (
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Username TEXT NOT NULL,
+                EarnedMoney INTEGER NOT NULL
+            );";
+            using (SqliteCommand command = new SqliteCommand(createMoneyTableQuery, connection))
+            {
+                command.ExecuteNonQuery();
+            }
+        }
     }
 
     // Метод для открытия окна регистрации
@@ -113,6 +165,8 @@ public class RegisterMenuManager : MonoBehaviour
                 {
                     insertCommand.ExecuteNonQuery();
                     ShowErrorText("Registration is successful!");
+                    PlayerPrefs.SetString("CurrentUsername", username);
+
                     SceneManager.LoadScene(1);
                     // Очистить поля ввода
                     loginInput.text = "";

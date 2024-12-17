@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using TMPro;
 using System.Threading;
+using Mono.Data.Sqlite;
 
 public delegate void CurrencyChanged();
 
@@ -141,7 +142,7 @@ public class GameManager : Singleton<GameManager>
     // Use this for initialization
     void Start ()
     {
-        Lives = 10;
+        Lives = 1;
         Currency = 50   ;
         totalMonstersKilled = 0; // Сброс счётчика убитых монстров
         totalCurrencyEarned = 0;
@@ -378,9 +379,38 @@ public class GameManager : Singleton<GameManager>
            //ahsdg.text = $"Game Over! Monsters killed: {totalMonstersKilled}, Total money earned: {totalCurrencyEarned}"    ;
             KilledMonsters.text = $"Monsters killed: {totalMonstersKilled}";
             Dollars.text = $" Total money: {totalCurrencyEarned}<color=#84f542>$</color>";
+            SaveStatisticsToDatabase();
         }
     }
 
+    private void SaveStatisticsToDatabase()
+    {
+        string username = PlayerPrefs.GetString("CurrentUsername", "UnknownUser"); // Сохраняйте имя текущего пользователя в PlayerPrefs при входе.
+
+        string conn = "URI=file:" + Application.dataPath + "/Database.db";
+        using (SqliteConnection connection = new SqliteConnection(conn))
+        {
+            connection.Open();
+
+            // Сохранение количества убитых монстров
+            string insertMonstersQuery = "INSERT INTO MonstersKilled (Username, KilledCount) VALUES (@Username, @KilledCount)";
+            using (SqliteCommand command = new SqliteCommand(insertMonstersQuery, connection))
+            {
+                command.Parameters.AddWithValue("@Username", username);
+                command.Parameters.AddWithValue("@KilledCount", totalMonstersKilled);
+                command.ExecuteNonQuery();
+            }
+
+            // Сохранение заработанных денег
+            string insertMoneyQuery = "INSERT INTO MoneyEarned (Username, EarnedMoney) VALUES (@Username, @EarnedMoney)";
+            using (SqliteCommand command = new SqliteCommand(insertMoneyQuery, connection))
+            {
+                command.Parameters.AddWithValue("@Username", username);
+                command.Parameters.AddWithValue("@EarnedMoney", totalCurrencyEarned);
+                command.ExecuteNonQuery();
+            }
+        }
+    }   
     public void Restart()
     {
         LevelMenu.SetActive(true);

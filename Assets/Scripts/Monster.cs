@@ -1,283 +1,282 @@
-﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
+﻿    using UnityEngine;
+    using System.Collections;
+    using System.Collections.Generic;
+    using System.Threading;
 
-public class Monster : MonoBehaviour
-{
-    [SerializeField]
-    private float speed;
-
-    private Stack<Node> path;
-
-    private List<Debuff> debuffs = new List<Debuff>();
-
-    private List<Debuff> debuffsToRemove = new List<Debuff>();
-
-    private List<Debuff> newDebuffs = new List<Debuff>();
-
-    [SerializeField]
-    private Element elementType;
-
-    private SpriteRenderer spriteRenderer;
-
-    private int invulnerability = 2;
-
-    protected Animator myAnimator;
-
-    [SerializeField]
-    private GameObject upgradePanel;
-
-    [SerializeField]
-    private Stat health;
-
-    public bool Alive
+    public class Monster : MonoBehaviour
     {
-        get { return health.CurrentValue > 0; }
-    }
+        [SerializeField]
+        private float speed;
 
-    public Point GridPosition { get; set; }
+        private Stack<Node> path;
 
-    public bool IsActive { get; set; }
+        private List<Debuff> debuffs = new List<Debuff>();
 
-    public float MaxSpeed { get; set; }
+        private List<Debuff> debuffsToRemove = new List<Debuff>();
 
-    public Element ElementType
-    {
-        get
+        private List<Debuff> newDebuffs = new List<Debuff>();
+
+        [SerializeField]
+        private Element elementType;
+
+        private SpriteRenderer spriteRenderer;
+
+        private int invulnerability = 2;
+
+        protected Animator myAnimator;
+
+        [SerializeField]
+        private GameObject upgradePanel;
+
+        [SerializeField]
+        private Stat health;
+
+        public bool Alive
         {
-            return elementType;
-        }
-    }
-
-    public float Speed
-    {
-        get
-        {
-            return speed;
+            get { return health.CurrentValue > 0; }
         }
 
-        set
+        public Point GridPosition { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public float MaxSpeed { get; set; }
+
+        public Element ElementType
         {
-            this.speed = value;
-        }
-    }
-
-    private Vector3 destination;
-
-    private void Awake()
-    {
-        myAnimator = GetComponent<Animator>();
-        spriteRenderer = GetComponent<SpriteRenderer>();
-        MaxSpeed = speed;
-        health.Initialize();
-    }
-
-    private void Update()
-    {
-        HandleDebuffs();
-        Move();
-    }
-
-    public void Spawn(int health)
-    {
-        // Устанавливаем позицию монстра на точку выхода
-        transform.position = LevelManager.Instance.BluePortal.transform.position;
-
-        // Сбрасываем параметры здоровья
-        this.health.Bar.Reset();
-        this.health.MaxVal = health;
-        this.health.CurrentValue = this.health.MaxVal;
-
-        // Анимация масштабирования появления
-        StartCoroutine(Scale(new Vector3(0.1f, 0.1f), new Vector3(1, 1), false));
-
-        // Устанавливаем путь монстра
-        SetPath(LevelManager.Instance.Path);
-
-        // Устанавливаем скорость монстра с учётом текущего множителя
-        this.Speed = this.MaxSpeed * GameManager.Instance.selectedSpeed;
-    }
-
-
-    public IEnumerator Scale(Vector3 from, Vector3 to, bool remove)
-    {
-        float progress = 0;
-
-        while (progress <= 1)
-        {
-            transform.localScale = Vector3.Lerp(from, to, progress);
-            progress += Time.deltaTime;
-            yield return null;
-        }
-
-        transform.localScale = to;
-
-        IsActive = true;
-
-        if (remove)
-        {
-            Release();
-        }
-    }
-
-    public void Move()
-    {
-        if (IsActive)
-        {
-            transform.position = Vector2.MoveTowards(transform.position, destination, Speed * Time.deltaTime);
-
-            if (transform.position == destination)
+            get
             {
-                if (path != null && path.Count > 0)
+                return elementType;
+            }
+        }
+
+        public float Speed
+        {
+            get
+            {
+                return speed;
+            }
+
+            set
+            {
+                this.speed = value;
+            }
+        }
+
+        private Vector3 destination;
+
+        private void Awake()
+        {
+            myAnimator = GetComponent<Animator>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
+            MaxSpeed = speed;
+            health.Initialize();
+        }
+
+        private void Update()
+        {
+            HandleDebuffs();
+            Move();
+        }
+
+        public void Spawn(int health)
+        {
+            // Устанавливаем позицию монстра на точку выхода
+            transform.position = LevelManager.Instance.BluePortal.transform.position;
+
+            // Сбрасываем параметры здоровья
+            this.health.Bar.Reset();
+            this.health.MaxVal = health;
+            this.health.CurrentValue = this.health.MaxVal;
+
+            // Анимация масштабирования появления
+            StartCoroutine(Scale(new Vector3(0.1f, 0.1f), new Vector3(1, 1), false));
+
+            // Устанавливаем путь монстра
+            SetPath(LevelManager.Instance.Path);
+
+            // Устанавливаем скорость монстра с учётом текущего множителя
+            this.Speed = this.MaxSpeed * GameManager.Instance.selectedSpeed;
+        }
+
+
+        public IEnumerator Scale(Vector3 from, Vector3 to, bool remove)
+        {
+            float progress = 0;
+
+            while (progress <= 1)
+            {
+                transform.localScale = Vector3.Lerp(from, to, progress);
+                progress += Time.deltaTime;
+                yield return null;
+            }
+
+            transform.localScale = to;
+
+            IsActive = true;
+
+            if (remove)
+            {
+                Release();
+            }
+        }
+
+        public void Move()
+        {
+            if (IsActive)
+            {
+                transform.position = Vector2.MoveTowards(transform.position, destination, Speed * Time.deltaTime);
+
+                if (transform.position == destination)
                 {
-                    Animate(GridPosition, path.Peek().GridPosition);
+                    if (path != null && path.Count > 0)
+                    {
+                        Animate(GridPosition, path.Peek().GridPosition);
 
-                    GridPosition = path.Peek().GridPosition;
+                        GridPosition = path.Peek().GridPosition;
 
-                    destination = path.Pop().WorldPosition;
+                        destination = path.Pop().WorldPosition;
 
+                    }
+                }
+            }
+
+        }
+
+        public void SetPath(Stack<Node> newPath)
+        {
+            if (newPath != null)
+            {
+                this.path = newPath;
+
+                Animate(GridPosition, path.Peek().GridPosition);
+
+                GridPosition = path.Peek().GridPosition;
+
+                destination = path.Pop().WorldPosition;
+            }
+        }
+
+        public void Animate(Point currentPos, Point newPos)
+        {
+            if (currentPos.Y > newPos.Y)
+            {
+                myAnimator.SetInteger("Horizontal", 0);
+
+                myAnimator.SetInteger("Vertical", 1);
+            }
+            else if (currentPos.Y < newPos.Y)
+            {
+                myAnimator.SetInteger("Horizontal", 0);
+                myAnimator.SetInteger("Vertical", -1);
+            }
+            if (currentPos.Y == newPos.Y)
+            {
+                if (currentPos.X > newPos.X)
+                {
+                    myAnimator.SetInteger("Vertical", 0);
+                    myAnimator.SetInteger("Horizontal", -1);
+                }
+                else if (currentPos.X < newPos.X)
+                {
+                    myAnimator.SetInteger("Vertical", 0);
+                    myAnimator.SetInteger("Horizontal", 1);
                 }
             }
         }
 
-    }
-
-    public void SetPath(Stack<Node> newPath)
-    {
-        if (newPath != null)
+        private void OnTriggerEnter2D(Collider2D other)
         {
-            this.path = newPath;
-
-            Animate(GridPosition, path.Peek().GridPosition);
-
-            GridPosition = path.Peek().GridPosition;
-
-            destination = path.Pop().WorldPosition;
-        }
-    }
-
-    public void Animate(Point currentPos, Point newPos)
-    {
-        if (currentPos.Y > newPos.Y)
-        {
-            myAnimator.SetInteger("Horizontal", 0);
-
-            myAnimator.SetInteger("Vertical", 1);
-        }
-        else if (currentPos.Y < newPos.Y)
-        {
-            myAnimator.SetInteger("Horizontal", 0);
-            myAnimator.SetInteger("Vertical", -1);
-        }
-        if (currentPos.Y == newPos.Y)
-        {
-            if (currentPos.X > newPos.X)
+            if (other.tag == "RedPortal")
             {
-                myAnimator.SetInteger("Vertical", 0);
-                myAnimator.SetInteger("Horizontal", -1);
-            }
-            else if (currentPos.X < newPos.X)
-            {
-                myAnimator.SetInteger("Vertical", 0);
-                myAnimator.SetInteger("Horizontal", 1);
-            }
-        }
-    }
+                StartCoroutine(Scale(new Vector3(1, 1), new Vector3(0.1f, 0.1f), true));
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.tag == "RedPortal")
-        {
-            StartCoroutine(Scale(new Vector3(1, 1), new Vector3(0.1f, 0.1f), true));
+                other.GetComponent<Portal>().Open();
 
-            other.GetComponent<Portal>().Open();
-
-            GameManager.Instance.Lives--;
-        }
-
-        if (other.tag == "Tile")
-        {
-            spriteRenderer.sortingOrder = other.GetComponent<TileScript>().GridPosition.Y;
-        }
-    }
-
-    public void Release()
-    {
-        debuffs.Clear();
-
-        IsActive = false;
-        GridPosition = LevelManager.Instance.BlueSpawn;
-
-        GameManager.Instance.RemoveMonster(this);
-
-        GameManager.Instance.Pool.ReleaseObject(gameObject);
-    }
-
-    public void TakeDamage(float damage, Element dmgSource)
-    {
-        if (IsActive)
-        {
-            if (dmgSource == ElementType)
-            {
-                damage = damage / invulnerability;
-                invulnerability++;
+                GameManager.Instance.Lives--;
             }
 
-            health.CurrentValue -= damage;
-
-            if (health.CurrentValue <= 0)
+            if (other.tag == "Tile")
             {
-                SoundManager.Instance.PlaySFX("Splat");
-                GameManager.Instance.Currency += 2;
-                //GameManager.Instance.totalCurrencyEarned += 2;
-                // Увеличиваем счетчик убитых монстров
-                GameManager.Instance.totalMonstersKilled++;
-
-                myAnimator.SetTrigger("Die");
-
-                IsActive = false;
-
-                GetComponent<SpriteRenderer>().sortingOrder--;
+                spriteRenderer.sortingOrder = other.GetComponent<TileScript>().GridPosition.Y;
             }
         }
 
-    }
-
-    public void AddDebuff(Debuff debuff)
-    {
-        if (!debuffs.Exists(x => x.GetType() == debuff.GetType()))
+        public void Release()
         {
-            newDebuffs.Add(debuff);
-        }
-    }
+            debuffs.Clear();
 
-    public void RemoveDebuff(Debuff debuff)
-    {
-        debuffsToRemove.Add(debuff);
-    }
+            IsActive = false;
+            GridPosition = LevelManager.Instance.BlueSpawn;
 
-    private void HandleDebuffs()
-    {
-        if (newDebuffs.Count > 0)
-        {
-            debuffs.AddRange(newDebuffs);
+            GameManager.Instance.RemoveMonster(this);
 
-            newDebuffs.Clear();
+            GameManager.Instance.Pool.ReleaseObject(gameObject);
         }
 
-        foreach (Debuff debuff in debuffsToRemove)
+        public void TakeDamage(float damage, Element dmgSource)
         {
-            debuffs.Remove(debuff);
+            if (IsActive)
+            {
+                if (dmgSource == ElementType)
+                {
+                    damage = damage / invulnerability;
+                    invulnerability++;
+                }
+
+                health.CurrentValue -= damage;
+
+                if (health.CurrentValue <= 0)
+                {
+                    SoundManager.Instance.PlaySFX("Splat");
+                    GameManager.Instance.Currency += 2;
+                
+                    GameManager.Instance.totalMonstersKilled++;
+
+                    myAnimator.SetTrigger("Die");
+
+                    IsActive = false;
+
+                    GetComponent<SpriteRenderer>().sortingOrder--;
+                }
+            }
+
         }
 
-        debuffsToRemove.Clear();
-
-        foreach (Debuff debuff in debuffs)
+        public void AddDebuff(Debuff debuff)
         {
-            debuff.Update();
+            if (!debuffs.Exists(x => x.GetType() == debuff.GetType()))
+            {
+                newDebuffs.Add(debuff);
+            }
         }
+
+        public void RemoveDebuff(Debuff debuff)
+        {
+            debuffsToRemove.Add(debuff);
+        }
+
+        private void HandleDebuffs()
+        {
+            if (newDebuffs.Count > 0)
+            {
+                debuffs.AddRange(newDebuffs);
+
+                newDebuffs.Clear();
+            }
+
+            foreach (Debuff debuff in debuffsToRemove)
+            {
+                debuffs.Remove(debuff);
+            }
+
+            debuffsToRemove.Clear();
+
+            foreach (Debuff debuff in debuffs)
+            {
+                debuff.Update();
+            }
+        }
+
+
     }
-
-
-}
