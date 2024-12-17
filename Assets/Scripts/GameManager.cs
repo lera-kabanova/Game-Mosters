@@ -10,6 +10,13 @@ public delegate void CurrencyChanged();
 
 public class GameManager : Singleton<GameManager>
 {
+
+    public TMP_Text ahsdg;
+
+
+    public int totalMonstersKilled = 0;
+    private int totalCurrencyEarned = 0;
+
     public event CurrencyChanged Changed;
  
     public TowerBtn ClickedBtn { get; set; }
@@ -89,6 +96,11 @@ public class GameManager : Singleton<GameManager>
 
         set
         {
+            if (value > currency)
+            {
+                totalCurrencyEarned += value - currency; // Добавляем разницу
+            }
+
             this.currency = value;
             this.currencyTxt.text = value.ToString() + " <color=#84f542>$</color>";
             OnCurrencyChanged();
@@ -325,13 +337,20 @@ public class GameManager : Singleton<GameManager>
             waveBtn.SetActive(true);
         }
     }
-
+    public void AddKilledMonster()
+    {
+        totalMonstersKilled++;
+        totalCurrencyEarned += 2; // 2 доллара за каждого убитого монстра
+    }
     public void GameOver()
     {
         if (!gameOver)
         {
             gameOver = true;
             gameOverMenu.SetActive(true);
+
+            // Вывод статистики в консоль
+            ahsdg.text = $"Game Over! Monsters killed: {totalMonstersKilled}, Total money earned: {totalCurrencyEarned}"    ;
         }
     }
 

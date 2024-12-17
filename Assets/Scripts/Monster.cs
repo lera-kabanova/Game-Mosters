@@ -221,13 +221,14 @@ public class Monster : MonoBehaviour
                 SoundManager.Instance.PlaySFX("Splat");
                 GameManager.Instance.Currency += 2;
 
+                // Увеличиваем счетчик убитых монстров
+                GameManager.Instance.totalMonstersKilled++;
+
                 myAnimator.SetTrigger("Die");
 
                 IsActive = false;
 
                 GetComponent<SpriteRenderer>().sortingOrder--;
-
-
             }
         }
 

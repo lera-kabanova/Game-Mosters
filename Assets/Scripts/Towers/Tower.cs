@@ -44,30 +44,18 @@ public abstract class Tower : MonoBehaviour
 
     public Element ElementType { get; protected set; }
 
-    /// <summary>
-    /// The projectile's price
-    /// </summary>
     public int Price { get; set; }
 
-    /// <summary>
-    /// Property for accessing the projectile's speed
-    /// </summary>
     public float ProjectileSpeed
     {
         get { return projectileSpeed; }
     }
 
-    /// <summary>
-    /// Property for accessing the projectile's target
-    /// </summary>
     public Monster Target
     {
         get { return target; }
     }
 
-    /// <summary>
-    /// Property for accessing the projectile's damage
-    /// </summary>
     public int Damage
     {
         get
