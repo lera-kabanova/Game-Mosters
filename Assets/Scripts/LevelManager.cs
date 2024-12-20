@@ -1,9 +1,29 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 using System;
+using UnityEngine.UI;
+using System.Collections;
 
 public class LevelManager : Singleton<LevelManager>
 {
+    [SerializeField]
+    private GameObject playBtn;
+
+    public GameObject canvas;
+  
+    [SerializeField]
+    private Canvas loadScreen;
+
+    [SerializeField]
+    private Stat loadingStat;
+
+    [SerializeField]
+    private Image fill;
+
+    private float fillAmount;
+
+    public bool Loading { get; private set; }
+
     [SerializeField]
     private GameObject[] tilePrefabs;
 
@@ -63,17 +83,51 @@ public class LevelManager : Singleton<LevelManager>
         }
     }
 
-    // Use this for initialization
     void Start()
     {
-        //Executes the create level function
-        CreateLevel();
+        StartLoading();
     }
 
-    // Update is called once per frame
     void Update()
     {
+        if (Loading)
+        {
+            UpdateBar();
+        }
+    }
 
+    public void StartLevel()
+    {
+        loadScreen.enabled = false;
+
+        Loading = false;
+    }
+
+    private void StartLoading()
+    {
+        loadScreen.enabled = true;
+        fillAmount = 0f; 
+        fill.fillAmount = fillAmount;
+
+        Loading = true;
+        StartCoroutine(LoadingProcess());
+    }
+
+    private IEnumerator LoadingProcess()
+    {
+        float loadingTime = 2f;  
+        float currentTime = 0f;
+
+        while (currentTime < loadingTime)
+        {
+            currentTime += Time.deltaTime;
+            fillAmount = Mathf.Clamp01(currentTime / loadingTime);
+            fill.fillAmount = fillAmount;
+
+            yield return null; 
+        }
+        CreateLevel();
+        canvas.gameObject.SetActive(true);
     }
 
     private void CreateLevel()
@@ -92,9 +146,9 @@ public class LevelManager : Singleton<LevelManager>
 
         Vector3 worldStart = Camera.main.ScreenToWorldPoint(new Vector3(0, Screen.height));
 
-        for (int y = 0; y < mapY; y++)
+        for (int y = 0; y < mapY; y++) 
         {
-            char[] newTiles = mapData[y].ToCharArray();
+            char[] newTiles = mapData[y].ToCharArray(); 
 
             for (int x = 0; x < mapX; x++) 
             {
@@ -108,6 +162,7 @@ public class LevelManager : Singleton<LevelManager>
 
         SpawnPortals();
 
+        StartLevel();
     }
 
     private void PlaceTile(string tileType, int x, int y, Vector3 worldStart)
@@ -116,9 +171,7 @@ public class LevelManager : Singleton<LevelManager>
 
         TileScript newTile = Instantiate(tilePrefabs[tileIndex]).GetComponent<TileScript>();
 
-        newTile.Setup(new Point(x, y), new Vector3(worldStart.x + (TileSize * x), worldStart.y - (TileSize * y), 0),map);
-
-
+        newTile.Setup(new Point(x, y), new Vector3(worldStart.x + (TileSize * x), worldStart.y - (TileSize * y), 0), map);
     }
 
     private string[] ReadLevelText()
@@ -130,11 +183,10 @@ public class LevelManager : Singleton<LevelManager>
         return data.Split('-');
     }
 
-
     private void SpawnPortals()
     {
         blueSpawn = new Point(0, 0);
-        GameObject tmp = (GameObject)Instantiate(bluePortalPrefab, Tiles[BlueSpawn].GetComponent<TileScript>().WorldPosition, Quaternion.identity);
+        GameObject tmp = Instantiate(bluePortalPrefab, Tiles[BlueSpawn].GetComponent<TileScript>().WorldPosition, Quaternion.identity);
         BluePortal = tmp.GetComponent<Portal>();
         BluePortal.name = "BluePortal";
 
@@ -150,5 +202,10 @@ public class LevelManager : Singleton<LevelManager>
     public void GeneratePath()
     {
         fullPath = AStar.GetPath(BlueSpawn, redSpawn);
+    }
+
+    private void UpdateBar()
+    {
+        fill.fillAmount = fillAmount;
     }
 }

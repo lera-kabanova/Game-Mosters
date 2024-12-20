@@ -75,7 +75,7 @@ public class BarScript : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    void Update ()
     {
         //Makes sure that handle bar is called.
         HandleBar();
@@ -121,9 +121,4 @@ public class BarScript : MonoBehaviour
     {
         return (value - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
     }
-    public void SetHealth(float health)
-    {
-        Value = health; // Устанавливаем новое значение здоровья на баре
-    }
-
 }

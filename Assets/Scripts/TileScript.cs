@@ -1,16 +1,28 @@
 ﻿using UnityEngine;
 using UnityEngine.EventSystems;
 
+/// <summary>
+/// This script is used for all tiles in the game
+/// </summary>
 public class TileScript : MonoBehaviour
 {
+    /// <summary>
+    /// The tiles gris position
+    /// </summary>
     public Point GridPosition { get; private set; }
 
     public bool IsEmpty { get; set; }
 
     private Tower myTower;
 
+    /// <summary>
+    /// the color of the tile, when its full, this is used while hovering the tile with the mouse
+    /// </summary>
     private Color32 fullColor = new Color32(255, 118, 118, 255);
 
+    /// <summary>
+    /// The color of the tile when is empty, this is used when hover the tile with the mouse
+    /// </summary>
     private Color32 emptyColor = new Color32(96, 255, 90, 255);
 
     private SpriteRenderer spriteRenderer;
@@ -19,6 +31,9 @@ public class TileScript : MonoBehaviour
 
     public bool Debugging { get; set; }
 
+    /// <summary>
+    /// The tile's center world position
+    /// </summary>
     public Vector2 WorldPosition
     {
         get
@@ -39,6 +54,11 @@ public class TileScript : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Sets up the tile, this is an alternative to a constructor
+    /// </summary>
+    /// <param name="gridPos">The tiles grid position</param>
+    /// <param name="worldPos">The tiles world postion</param>
     public void Setup(Point gridPos, Vector3 worldPos, Transform parent)
     {
         Walkable = true;
@@ -49,6 +69,9 @@ public class TileScript : MonoBehaviour
         LevelManager.Instance.Tiles.Add(gridPos, this);
     }
 
+    /// <summary>
+    /// Mouseover, this is executed when the player mouse over the tile
+    /// </summary>
     private void OnMouseOver()
     {
         if (!EventSystem.current.IsPointerOverGameObject() && GameManager.Instance.ClickedBtn != null)
@@ -86,18 +109,23 @@ public class TileScript : MonoBehaviour
         {
             ColorTile(Color.white);
         }
-
+        
     }
 
+    /// <summary>
+    /// Places a tower on the tile
+    /// </summary>
     private void PlaceTower()
     {
         Walkable = false;
-
-        if(AStar.GetPath(LevelManager.Instance.BlueSpawn, LevelManager.Instance.RedSpawn) == null)
+        if (AStar.GetPath(LevelManager.Instance.BlueSpawn, LevelManager.Instance.RedSpawn) == null)
         {
+            //we dont have path
             Walkable = true;
             return;
         }
+
+        //Creates the tower
         GameObject tower = (GameObject)Instantiate(GameManager.Instance.ClickedBtn.TowerPrefab, transform.position, Quaternion.identity);
 
         //Set the sorting layer order on the tower
@@ -118,9 +146,14 @@ public class TileScript : MonoBehaviour
 
         //Buys the tower
         GameManager.Instance.BuyTower();
-
+        
         Walkable = false;
     }
+
+    /// <summary>
+    /// Sets the color on the tile
+    /// </summary>
+    /// <param name="newColor"></param>
     private void ColorTile(Color newColor)
     {
         //Sets the color on the tile

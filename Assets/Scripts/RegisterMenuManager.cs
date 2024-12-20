@@ -73,35 +73,44 @@ public class RegisterMenuManager : MonoBehaviour
         }
     }
 
-    void CreateTablesIfNotExists()
+   public void CreateTablesIfNotExists()
     {
+
         string conn = "URI=file:" + Application.dataPath + "/Database.db";
         using (SqliteConnection connection = new SqliteConnection(conn))
         {
             connection.Open();
-            string createMonstersTableQuery = @"
-            CREATE TABLE IF NOT EXISTS MonstersKilled (
-                Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                Username TEXT NOT NULL,
-                KilledCount INTEGER NOT NULL
-            );";
-            using (SqliteCommand command = new SqliteCommand(createMonstersTableQuery, connection))
+
+            string createUserStatsTableQuery = @"
+            CREATE TABLE IF NOT EXISTS UserStatistics (
+            Id INTEGER PRIMARY KEY AUTOINCREMENT,
+            Username TEXT NOT NULL,
+            KilledMonsters INTEGER NOT NULL DEFAULT 0,
+            EarnedMoney INTEGER NOT NULL DEFAULT 0
+        );";
+
+          
+            using (SqliteCommand command = new SqliteCommand(createUserStatsTableQuery, connection))
             {
                 command.ExecuteNonQuery();
             }
 
-            string createMoneyTableQuery = @"
-            CREATE TABLE IF NOT EXISTS MoneyEarned (
-                Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                Username TEXT NOT NULL,
-                EarnedMoney INTEGER NOT NULL
+            string createLeaderBoardTableQuery = @"
+            CREATE TABLE IF NOT EXISTS HighScores (
+            PlayerID INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE,
+            Name TEXT,
+            Score INTEGER,
+            Date DATETIME DEFAULT CURRENT_DATE
             );";
-            using (SqliteCommand command = new SqliteCommand(createMoneyTableQuery, connection))
+
+            using (SqliteCommand command = new SqliteCommand(createLeaderBoardTableQuery, connection))
             {
                 command.ExecuteNonQuery();
             }
         }
+    
     }
+ 
 
     // Метод для открытия окна регистрации
     public void OpenRegistrationImage()
@@ -159,7 +168,7 @@ public class RegisterMenuManager : MonoBehaviour
             {
                
                 insertCommand.Parameters.AddWithValue("@Login", username);
-                insertCommand.Parameters.AddWithValue("@Password", password); // Пароль сохранён как есть (рекомендуется использовать хеширование)
+                insertCommand.Parameters.AddWithValue("@Password", password);
              
                 try
                 {
@@ -168,7 +177,7 @@ public class RegisterMenuManager : MonoBehaviour
                     PlayerPrefs.SetString("CurrentUsername", username);
 
                     SceneManager.LoadScene(1);
-                    // Очистить поля ввода
+                   
                     loginInput.text = "";
                     passwordInput.text = "";
                     confirmPasswordInput.text = "";
@@ -195,14 +204,14 @@ public class RegisterMenuManager : MonoBehaviour
         // Имя должно содержать хотя бы одну букву (русскую или английскую)
         if (!System.Text.RegularExpressions.Regex.IsMatch(username, @"[a-zA-Zа-яА-Я]"))
         {
-            errorMessage = "Имя пользователя должно содержать хотя бы одну букву.";
+            errorMessage = "The user name must contain at least one letter.";
             return false;
         }
 
         // Имя должно содержать хотя бы одну цифру
         if (!System.Text.RegularExpressions.Regex.IsMatch(username, @"\d"))
         {
-            errorMessage = "The user name must contain at least one letter.";
+            errorMessage = "The user name must contain at least one digit.";
             return false;
         }
 

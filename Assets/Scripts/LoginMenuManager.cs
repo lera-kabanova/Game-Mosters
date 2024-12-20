@@ -11,7 +11,7 @@ using System.Text;
 
 public class LoginMenuManager : MonoBehaviour
 {
-
+  
     [SerializeField]
     private GameObject SelectedMenu;
 
