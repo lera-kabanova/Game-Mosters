@@ -398,12 +398,12 @@ public class GameManager : Singleton<GameManager>
 
                 if (count > 0)
                 {
-                    // Если запись существует, добавляем текущие значения к существующей статистике
+                    // Если запись существует, обновляем статистику
                     string updateStatsQuery = @"
-                    UPDATE UserStatistics 
-                    SET KilledMonsters = KilledMonsters + @KilledMonsters, 
-                        EarnedMoney = EarnedMoney + @EarnedMoney
-                    WHERE Username = @Username";
+                UPDATE UserStatistics 
+                SET KilledMonsters = KilledMonsters + @KilledMonsters, 
+                    EarnedMoney = EarnedMoney + @EarnedMoney
+                WHERE Username = @Username";
 
                     using (SqliteCommand updateCommand = new SqliteCommand(updateStatsQuery, connection))
                     {
@@ -417,8 +417,8 @@ public class GameManager : Singleton<GameManager>
                 {
                     // Если записи нет, создаём её
                     string insertStatsQuery = @"
-                    INSERT INTO UserStatistics (Username, KilledMonsters, EarnedMoney) 
-                    VALUES (@Username, @KilledMonsters, @EarnedMoney)";
+                INSERT INTO UserStatistics (Username, KilledMonsters, EarnedMoney) 
+                VALUES (@Username, @KilledMonsters, @EarnedMoney)";
 
                     using (SqliteCommand insertCommand = new SqliteCommand(insertStatsQuery, connection))
                     {
@@ -429,21 +429,28 @@ public class GameManager : Singleton<GameManager>
                     }
                 }
             }
+            string upsertHighScoresQuery = @"
+    UPDATE HighScores
+    SET score = score + @Score, 
+        date = CURRENT_TIMESTAMP 
+    WHERE Name = @Name;
 
-            // Обновляем таблицу рекордов
-            string upsertLeaderboardQuery = @"
-            INSERT OR REPLACE INTO Leaderboard (Username, EarnedMoney) 
-            SELECT Username, EarnedMoney 
-            FROM UserStatistics
-            WHERE Username = @Username";
+    -- Вставить новую запись, если пользователь с таким именем еще не существует
+    INSERT INTO HighScores (Name, score, date)
+    SELECT @Name, @Score, CURRENT_TIMESTAMP
+    WHERE (SELECT COUNT(*) FROM HighScores WHERE Name = @Name) = 0;";
 
-            using (SqliteCommand leaderboardCommand = new SqliteCommand(upsertLeaderboardQuery, connection))
+            using (SqliteCommand highScoresCommand = new SqliteCommand(upsertHighScoresQuery, connection))
             {
-                leaderboardCommand.Parameters.AddWithValue("@Username", username);
-                leaderboardCommand.ExecuteNonQuery();
+                highScoresCommand.Parameters.AddWithValue("@Name", username);
+                highScoresCommand.Parameters.AddWithValue("@Score", totalCurrencyEarned);
+                highScoresCommand.ExecuteNonQuery();
             }
+
+
         }
     }
+
 
 
 
@@ -458,7 +465,7 @@ public class GameManager : Singleton<GameManager>
         wave = 0;
         health = 15;
         Lives = 1;
-        Currency = 50;
+        //Currency = 50;
         LevelMenu.SetActive(true);
         inGameMenu.SetActive(false);
         Time.timeScale = 1;
@@ -541,21 +548,21 @@ public class GameManager : Singleton<GameManager>
         }
         else
         {
-            if (!isLevelDifficultySelected) // Если уровень сложности еще не выбран
+            if (!isLevelDifficultySelected) 
             {
                 inGameMenu.SetActive(false);
-                LevelMenu.SetActive(true); // Показываем меню выбора уровня сложности
+                LevelMenu.SetActive(true); 
             }
             else
             {
                 inGameMenu.SetActive(!inGameMenu.activeSelf);
                 if (!inGameMenu.activeSelf)
                 {
-                    Time.timeScale = 1; // Возвращаем нормальную скорость игры
+                    Time.timeScale = 1; 
                 }
                 else
                 {
-                    Time.timeScale = 0; // Пауза в игре
+                    Time.timeScale = 0; 
                 }
             }
         }
@@ -580,61 +587,4 @@ public class GameManager : Singleton<GameManager>
         optionsMenu.SetActive(false);
     }
 
-    public GameObject btnShowLeaderboard;  // Кнопка для отображения таблицы
-    public GameObject leaderboardImage;  // Используем Image для отображения таблицы
-    public Transform leaderboardContent;  // Контейнер для элементов списка
-    public GameObject leaderboardItemPrefab;  // Префаб элемента списка
-
-    // Строка подключения к базе данных
-    private string connectionString = "Data Source=DataBase.db";
-    // Функция для отображения таблицы рекордов
-    public void ShowLeaderboard()
-    {
-        // Сделать видимой таблицу с рекордами
-        leaderboardImage.gameObject.SetActive(true);
-
-        // Очистить старые данные
-        foreach (Transform child in leaderboardContent)
-        {
-            Destroy(child.gameObject);
-        }
-
-        // Получить отсортированные данные из базы данных
-        using (SqliteConnection connection = new SqliteConnection(connectionString))
-        {
-            connection.Open();
-
-            // Запрос для получения списка таблиц
-            string checkTablesQuery = "SELECT name FROM sqlite_master WHERE type='table';";
-            using (SqliteCommand command = new SqliteCommand(checkTablesQuery, connection))
-            {
-                using (SqliteDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        Debug.Log("Table found: " + reader.GetString(0));
-                    }
-                }
-            }
-
-            // Запрос для получения данных из таблицы Leaderboard
-            string selectLeaderboardQuery = @"
-        SELECT Username, EarnedMoney 
-        FROM Leaderboard 
-        ORDER BY EarnedMoney DESC";
-            using (SqliteCommand command = new SqliteCommand(selectLeaderboardQuery, connection))
-            {
-                using (SqliteDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        string username = reader.GetString(0);
-                        double earnedMoney = reader.GetDouble(1);
-                        Debug.Log($"{username}: {earnedMoney}");
-                    }
-                }
-            }
-        }
-
-    }
 }

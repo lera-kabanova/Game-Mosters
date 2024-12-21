@@ -5,16 +5,9 @@ using System.Collections.Generic;
 public class Monster : MonoBehaviour
 {
 
-    /// <summary>
-    /// The units movement speed
-    /// </summary>
     [SerializeField]
     private float speed;
 
-    /// <summary>
-    /// This stack contains the path that the Unit can walk on
-    /// This path should be generated with the AStar algorithm
-    /// </summary>
     private Stack<Node> path;
 
     private List<Debuff> debuffs = new List<Debuff>();
@@ -30,9 +23,6 @@ public class Monster : MonoBehaviour
 
     private int invulnerability = 2;
 
-    /// <summary>
-    /// A reference to the Unit's animator
-    /// </summary>
     protected Animator myAnimator;
 
     [SerializeField]
@@ -46,14 +36,8 @@ public class Monster : MonoBehaviour
         get { return health.CurrentValue > 0; }
     }
 
-    /// <summary>
-    /// The Unit's grid position
-    /// </summary>
     public Point GridPosition { get; set; }
 
-    /// <summary>
-    /// Indicates if the Unit is active
-    /// </summary>
     public bool IsActive { get; set; }
 
     public float MaxSpeed { get; set; }
@@ -79,9 +63,6 @@ public class Monster : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// The unit's next destination
-    /// </summary>
     private Vector3 destination;
 
     private void Awake()
@@ -99,9 +80,6 @@ public class Monster : MonoBehaviour
         Move();
     }
 
-    /// <summary>
-    /// Spawns the monster in our world
-    /// </summary>
     public void Spawn(int health)
     {
         transform.position = LevelManager.Instance.BluePortal.transform.position;
@@ -116,12 +94,6 @@ public class Monster : MonoBehaviour
         SetPath(LevelManager.Instance.Path);
     }
 
-    /// <summary>
-    /// Scales a monster up or down
-    /// </summary>
-    /// <param name="from">start scale</param>
-    /// <param name="to">end scale</param>
-    /// <returns></returns>
     public IEnumerator Scale(Vector3 from, Vector3 to, bool remove)
     {
         //The scaling progress
@@ -147,9 +119,6 @@ public class Monster : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Makes the unity move along the given path
-    /// </summary>
     public void Move()
     {
         if (IsActive)
@@ -178,11 +147,6 @@ public class Monster : MonoBehaviour
 
     }
 
-    /// <summary>
-    /// Gives the Unit a path to walk on
-    /// </summary>
-    /// <param name="newPath">The unit's new path</param>
-    /// <param name="active">Indicates if the unit is active</param>
     public void SetPath(Stack<Node> newPath)
     {
         if (newPath != null) //If we have a path
@@ -201,11 +165,6 @@ public class Monster : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Animates the Unit according to the current action
-    /// </summary>
-    /// <param name="currentPos"></param>
-    /// <param name="newPos"></param>
     public void Animate(Point currentPos, Point newPos)
     {
         //The code below animates the unit based on the moving direction
@@ -241,10 +200,6 @@ public class Monster : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// When the monster collides with something
-    /// </summary>
-    /// <param name="other"></param>
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "RedPortal")//If we collide with the red portal
@@ -264,9 +219,6 @@ public class Monster : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Releases a monster from the game into the object pool
-    /// </summary>
     public void Release()
     {
         //Removes all debuffs
@@ -308,7 +260,7 @@ public class Monster : MonoBehaviour
                 IsActive = false;
 
                 GetComponent<SpriteRenderer>().sortingOrder--;
-
+                GameManager.Instance.totalMonstersKilled++;
 
             }
         }
